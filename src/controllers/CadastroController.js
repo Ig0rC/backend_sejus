@@ -148,7 +148,7 @@ module.exports = {
                 })
                 return res.status(201).send();
             }
-            else if(tipo_login == 3){
+            else if (id_tipo_login == 3) {
                 const {
                     estado_civil,
                     raca,
@@ -159,11 +159,101 @@ module.exports = {
                     ocupacao,
                     aposentado,
                     ultima_profissao,
-                    renda, 
-                    adm
-                }
-            }
+                    renda,
+                    adm_financeira,
+                    locomacao,
+                    prog_social,
+                    atendimento,
+                    descricao_perfil,
+                    experiencia_profissional,
+                    conhecimento_curso,
+                    acessibilidade,
+                    patologia,
+                    autonomia,
+                    nome_SOS,
+                    numero_SOS,
+                    ddd_SOS,
+                    tipo_telefone_sos,
+                } = req.body
+
+                const cpf_aluno = cpf;
+                const id_saude = 25;
+                // ACESSIBILIDADE
+                const numero_telefone = numero_SOS;
+                const ddi = '015';
+                const ddd = ddd_SOS;
+                const id_tipo_telefone = tipo_telefone_sos;
+                const nome = nome_SOS;
+            
         
+                //insert table telefone for emergencial
+                await knex('telefone').insert({
+                    id_tipo_telefone, ddd, ddi, numero_telefone,
+                });
+
+                //insert table estado saude
+                await knex('estado_saude').insert({
+                    acessibilidade, patologia, autonomia
+                });
+                // BUSCA ID SAUDE PARTE 1
+                const busca_id_saude = await knex
+                    .select('id_saude')
+                    .from('estado_Saude')
+                    .where('')
+
+
+                // PARTE 2: search id for table telefone
+                const busca_id_contato_sos = await knex
+                    .select('id_telefone', 'numero_telefone')
+                    .from('telefone')
+                    .where(
+                        {
+                            numero_telefone: numero_telefone,
+                            id_tipo_telefone: id_tipo_telefone,
+                            ddd: ddd
+                        }
+                    );
+
+                let id_contato; //salva meu id
+                //parte 3: search id for table telefone
+                for (let i = 0; i < busca_id_contato_sos.length; i++) {
+                    if (numero_telefone == busca_id_contato_sos[i].numero_telefone) {
+                        const id_telefone = busca_id_contato_sos[i].id_telefone;
+                        id_contato = id_telefone;
+                        await knex('contato_emergencial').insert({
+                            nome, id_telefone
+                        })
+                        console.log("ze ruela")
+                    }
+                }
+
+                //PARTE 4: search id for table telefone
+                const busca_id_telefone_SOS = await knex
+                    .select('id_contato_emergencial', 'id_telefone')
+                    .from('contato_emergencial')
+                    .where('id_telefone', id_contato);
+                
+                //PARTE 5: insert table aluno
+                console.log(busca_id_telefone_SOS)
+                for (let i = 0; i < busca_id_telefone_SOS.length; i++) {
+                        id_contato_emergencial = busca_id_telefone_SOS[i].id_contato_emergencial;
+                        await knex('aluno').insert({
+                            cpf_aluno, estado_civil, raca,
+                            filhos, moradia, escolaridade,
+                            situacao_economica, ocupacao, aposentado,
+                            ultima_profissao, renda, adm_financeira,
+                            locomacao, prog_social, atendimento,
+                            id_saude, descricao_perfil, experiencia_profissional,
+                            conhecimento_curso, id_contato_emergencial
+                        });  
+                        console.log('vai brasil')
+                }
+                
+              
+
+                return res.status(201).send();
+            }
+
             return res.status(201).send();
         } catch (error) {
             next(error)

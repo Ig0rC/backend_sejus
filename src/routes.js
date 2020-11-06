@@ -10,7 +10,12 @@ routes.post('/professor', ProfessorCadastro.create);
 
 routes.post('/cadastro',   CadastroController.cadastrar);
 
-routes.post('/instituicao-criar', InstituicaoController.createInstituicao);
+
+//instituicao
+routes.post('/instituicao', InstituicaoController.createInstituicao);
+routes.delete('/instituicao/:id', InstituicaoController.deleteInstituicao);
+routes.get('/instituicao', InstituicaoController.instituicaoAll);
+routes.get('/instituicao/:id', InstituicaoController.selecionaInstituicao);
 
 
 

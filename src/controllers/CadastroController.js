@@ -1,6 +1,8 @@
 const knex = require('../database/index');
 
 
+
+
 module.exports = {
     async cadastrar(req, res, next) {
 
@@ -63,10 +65,15 @@ module.exports = {
                 cep, estado, cidade, bairro, quadra, numero_endereco, complemento
             });
 
+
             // insert tabela telefone
             await knex('telefone').insert({
                 id_tipo_telefone, ddd, ddi, numero_telefone
             });
+            
+
+
+
 
 
             // pegando id do login
@@ -132,8 +139,7 @@ module.exports = {
                 }
             }
 
-
-
+        
             // PROFESSOR
             if (id_tipo_login == 2) {
                 const {
@@ -167,40 +173,31 @@ module.exports = {
                     descricao_perfil,
                     experiencia_profissional,
                     conhecimento_curso,
-                    acessibilidade,
-                    patologia,
                     autonomia,
+                    acessibilidade, 
+                    patologia,
                     nome_SOS,
                     numero_SOS,
                     ddd_SOS,
                     tipo_telefone_sos,
+                    dado_acessibilidade,
+                    dado_autonomia,
+                    dado_patologia
+        
                 } = req.body
 
-                const cpf_aluno = cpf;
-                const id_saude = 25;
-                // ACESSIBILIDADE
+                const cpf_aluno = cpf;                // ACESSIBILIDADE
                 const numero_telefone = numero_SOS;
                 const ddi = '015';
                 const ddd = ddd_SOS;
                 const id_tipo_telefone = tipo_telefone_sos;
                 const nome = nome_SOS;
-            
+                
         
                 //insert table telefone for emergencial
                 await knex('telefone').insert({
                     id_tipo_telefone, ddd, ddi, numero_telefone,
                 });
-
-                //insert table estado saude
-                await knex('estado_saude').insert({
-                    acessibilidade, patologia, autonomia
-                });
-                // BUSCA ID SAUDE PARTE 1
-                const busca_id_saude = await knex
-                    .select('id_saude')
-                    .from('estado_Saude')
-                    .where('')
-
 
                 // PARTE 2: search id for table telefone
                 const busca_id_contato_sos = await knex
@@ -219,12 +216,79 @@ module.exports = {
                 for (let i = 0; i < busca_id_contato_sos.length; i++) {
                     if (numero_telefone == busca_id_contato_sos[i].numero_telefone) {
                         const id_telefone = busca_id_contato_sos[i].id_telefone;
-                        id_contato = id_telefone;
-                        await knex('contato_emergencial').insert({
-                            nome, id_telefone
-                        })
-                        console.log("ze ruela")
+                            id_contato = id_telefone;
+                                await knex('contato_emergencial').insert({
+                                    nome, id_telefone
+                                })
+                                console.log("ze ruela")
                     }
+                }
+
+                // ACESSIBILIDADE, PATOLOGIA E OUTROS
+                let id_acessibilidade;
+                if(acessibilidade == 0){
+                    const outros = true;
+                    await knex('acessibilidade').insert({
+                        dado_acessibilidade, outros
+                    })
+                        const busca_id_acessibilidade = await knex
+                                .select('id_acessibilidade', 'dado_acessibilidade', 'outros')
+                                .from('acessibilidade')
+                                .where({
+                                    dado_acessibilidade: dado_acessibilidade,
+                                    outros: outros
+                        })
+                        console.log('porra')
+                    for(let i = 0; i < busca_id_acessibilidade.length; i++){
+                        id_acessibilidade = busca_id_acessibilidade[i].id_acessibilidade;
+                        console.log(id_acessibilidade);
+                    }
+                }else{
+                 id_acessibilidade = acessibilidade;   
+                }
+            
+                // TABELA AUTONOMIA INSERT CASO FOR OUTROS
+                let id_autonomia;
+                if(autonomia == 0){
+                    const outros = true;
+                    await knex('autonomia').insert({
+                        dado_autonomia, outros
+                    });
+                    const busca_id_autonomia = await knex
+                        .select('id_autonomia', 'dado_autonomia', 'outros')
+                        .from('autonomia')
+                        .where({
+                            dado_autonomia: dado_autonomia,
+                            outros: outros
+                        })
+                    for(let i = 0; i < busca_id_autonomia.length; i++){
+                        id_autonomia = busca_id_autonomia[i].id_autonomia;
+                    }
+                }else{
+                    id_autonomia = autonomia
+                }
+
+
+                // INSERT TABELA PATOLOGIA CASO OPÇÃO OUTROS FOR SELECIONADO
+                let id_patologia;
+
+                if(patologia == 0){
+                    const outros = true;
+                    await knex('patologia').insert({
+                        dado_patologia, outros
+                    })
+                    const busca_id_patologia = await knex
+                        .select('id_patologia', 'dado_patologia', 'outros')
+                        .from('patologia')
+                        .where({
+                            dado_patologia: dado_patologia,
+                            outros: outros
+                    });
+                    for(let i = 0; i < busca_id_patologia.length; i++){
+                        id_patologia = busca_id_patologia[i].id_patologia;
+                    }
+                }else{
+                    id_patologia = patologia;
                 }
 
                 //PARTE 4: search id for table telefone
@@ -243,16 +307,22 @@ module.exports = {
                             situacao_economica, ocupacao, aposentado,
                             ultima_profissao, renda, adm_financeira,
                             locomacao, prog_social, atendimento,
-                            id_saude, descricao_perfil, experiencia_profissional,
+                            descricao_perfil, experiencia_profissional,
                             conhecimento_curso, id_contato_emergencial
                         });  
                         console.log('vai brasil')
                 }
+
+
+                await knex('saude_aluno').insert({
+                    cpf_aluno, id_acessibilidade , id_patologia , id_autonomia 
+                });
                 
-              
+                console.log('contato')
 
                 return res.status(201).send();
             }
+            console.log('aluno')
 
             return res.status(201).send();
         } catch (error) {

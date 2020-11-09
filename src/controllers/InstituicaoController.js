@@ -169,10 +169,10 @@ module.exports = {
             console.log('alo')
             const { id } = req.params;
 
-            const id_instituicao = id;
+           
    
             const selecionarInst = await knex('instituicao')
-                .where('instituicao.id_instituicao', 50)
+                .where('instituicao.id_instituicao', id)
                 .join('endereco_instituicao', 'endereco_instituicao.id_instituicao', '=', 'instituicao.id_instituicao')
                 .join ('telefone_instituicao',  'telefone_instituicao.id_instituicao', '=','instituicao.id_instituicao')
                 .select('instituicao.*', 'endereco_instituicao.*', 'telefone_instituicao.*')
@@ -183,6 +183,29 @@ module.exports = {
             next(error)
         }
 
+    },
+    async UpdateInstituicao(req, res, next){
+
+        try {
+            const { id } = req.params;
+            const { nome, responsavel, unidade, email} = req.body;
+    
+            
+    
+            await knex('instituicao')
+                .where('id_instituicao', id)
+                .update({
+                    nome: nome,
+                    responsavel: responsavel,
+                    unidade: unidade,
+                    email: email
+                });
+
+            return res.status(201).send();
+        } catch (error) {
+            next(error);
+        }
+      
     }
 
 }

@@ -19,7 +19,7 @@ module.exports = {
                 numero_rg,
                 email,
                 senha,
-                id_tipo_login,
+                nome_tipo_login,
                 orgao_emissor,
                 uf,
                 numero_telefone,
@@ -34,6 +34,28 @@ module.exports = {
                 complemento,
 
             } = req.body;
+
+            //verificação de tipo de login 
+            
+            
+            
+            const validation_login = await knex
+                .select('id_tipo_login','nome_tipo_login')
+                .from('tipo_login')
+                .where('nome_tipo_login', 'ILIKE', `%${nome_tipo_login}%` );
+            
+               
+          
+            if(validation_login.length == 0){
+                return next(error)
+            }
+            let result_validation_login_nome;
+            let id_tipo_login;
+            for(let i = 0;  i < validation_login.length; i++){
+                result_validation_login_nome = validation_login[i].nome_tipo_login;
+                id_tipo_login = validation_login[i].id_tipo_login;
+            }
+        
 
             // insert tabela rg;
             await knex('rg').insert({
@@ -139,9 +161,9 @@ module.exports = {
                 }
             }
 
-        
+         
             // PROFESSOR
-            if (id_tipo_login == 2) {
+            if ( result_validation_login_nome == 'PROFESSOR') {
                 const {
                     especializacao,
                     grau_formacao
@@ -154,7 +176,8 @@ module.exports = {
                 })
                 return res.status(201).send();
             }
-            else if (id_tipo_login == 3) {
+            //aluno
+            else if (result_validation_login_nome == 'ALUNO') {
                 const {
                     estado_civil,
                     raca,
@@ -322,9 +345,24 @@ module.exports = {
 
                 return res.status(201).send();
             }
-            console.log('aluno')
+            else if(result_validation_login_nome == 'ADM'){
+               const cpf_administrador  = cpf;
+               const permissao = false;
 
+             
+                await knex('administrador').insert({
+                    cpf_administrador, permissao
+                });
+                       
+                await knex('cadastro_administrador').insert({
+                    cpf_administrador
+                })
             return res.status(201).send();
+
+            }
+            
+
+          next(error)
         } catch (error) {
             next(error)
         }

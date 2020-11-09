@@ -26,7 +26,7 @@ module.exports = {
     async buscarCursos(req, res, next){
         try {
             const result = await knex('curso')
-                .select('nome', 'duracao_semestres', 'periodo', 'nivel',' carga_horaria')
+                .select('id_curso', 'nome', 'duracao_semestres', 'periodo', 'nivel',' carga_horaria')
 
                 return res.json(result);
         } catch (error) {   
@@ -38,7 +38,7 @@ module.exports = {
             const { id } = req.params;
 
             const result = await knex('curso')
-                .select('nome', 'duracao_semestres', 'periodo', 'nivel', 'carga_horaria')
+                .select('id_curso','nome', 'duracao_semestres', 'periodo', 'nivel', 'carga_horaria')
                     .where('id_curso', id);
 
                     return res.json(result);
@@ -59,7 +59,7 @@ module.exports = {
             next(error);
         }
     },
-    async updateCurso(req, res, next){
+    async AtualizarCurso(req, res, next){
         try {
             const { id } = req.params;
             const {

@@ -33,10 +33,10 @@ module.exports = {
         }
 
     },
-    async BuscarTurmaAll(req, res, next){
+    async buscarTurmas(req, res, next){
         try {
             const result = await knex  
-                .select('nome_turma', 'data_ingresso')
+                .select('id_turma','nome_turma', 'data_ingresso')
                 .from('turma')
             
             return res.json(result)
@@ -58,7 +58,7 @@ module.exports = {
             return next(error);
         }
     },
-    async updateTurma(req,res,next){
+    async AtualizarTurmas(req,res,next){
         try {
             const { id } = req.params;
             const { nome_turma } = req.body;

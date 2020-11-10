@@ -11,7 +11,8 @@ const TurmaRoutes = require('./routes/TurmaRoutes/routes');
 const DisciplinaCursoRoutes = require('./routes/ConnectionDisciplinaCursoRoutes/routes');
 const ConnectionTurmaCursoRoutes = require('./routes/ConnectionTurmaCursoRoutes/routes');
 const ConnectionTurmaAlunoRoutes = require('./routes/ConnectionTurmaAlunoRoutes/routes');
-
+const SemestreRoutes = require('./routes/SemestreRoutes/routes');
+const CoodernaRoutes = require('./routes/CoodernaRoutes/routes')
 
 
 const app = express();
@@ -28,7 +29,9 @@ app.use(
         TurmaRoutes,
         DisciplinaCursoRoutes,
         ConnectionTurmaCursoRoutes,
-        ConnectionTurmaAlunoRoutes
+        ConnectionTurmaAlunoRoutes,
+        SemestreRoutes,
+        CoodernaRoutes
         );
 
 
@@ -44,7 +47,6 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
     res.status(error.status || 500)
     res.json({error: error.message});
-
 })
 
 

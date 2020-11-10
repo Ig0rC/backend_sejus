@@ -6,7 +6,7 @@ const knex = require('../../database/index');
         
             try {
                 const {
-                    nome,
+                    nome_curso,
                     duracao_semestres,
                     periodo, 
                     nivel, 
@@ -14,7 +14,7 @@ const knex = require('../../database/index');
                 } = req.body
             
                     await knex('curso').insert({
-                        nome, duracao_semestres, periodo, nivel, carga_horaria
+                        nome_curso, duracao_semestres, periodo, nivel, carga_horaria
                     })
         
                 
@@ -26,7 +26,7 @@ const knex = require('../../database/index');
         async buscarCursos(req, res, next){
             try {
                 const result = await knex('curso')
-                    .select('id_curso', 'nome', 'duracao_semestres', 'periodo', 'nivel',' carga_horaria')
+               
 
                     return res.json(result);
             } catch (error) {   
@@ -38,7 +38,7 @@ const knex = require('../../database/index');
                 const { id } = req.params;
 
                 const result = await knex('curso')
-                    .select('id_curso','nome', 'duracao_semestres', 'periodo', 'nivel', 'carga_horaria')
+                    .select('curso.*')
                         .where('id_curso', id);
 
                         return res.json(result);
@@ -72,7 +72,7 @@ const knex = require('../../database/index');
                 await knex('curso')
                         .where('id_curso', id)
                             .update({
-                                nome: nome,
+                                nome_curso: nome,
                                 duracao_semestres: duracao_semestres,
                                 periodo: periodo,
                                 nivel: nivel,

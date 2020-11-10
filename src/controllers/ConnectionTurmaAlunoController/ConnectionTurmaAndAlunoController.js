@@ -1,4 +1,4 @@
-const knex = require('../database/index');
+const knex = require('../../database/index');
 
 module.exports = {
     async ConexaoTA(req, res, next){

@@ -1,4 +1,4 @@
-const knex = require('../database/index');
+const knex = require('../../database/index');
 
 module.exports = {
     async CadastrarTurmaCurso (req, res, next){
@@ -35,10 +35,11 @@ module.exports = {
     },
     async AtualizarTurmaCurso(req, res, next){
         try {
-            const { id } = req.params;
+            const { turma, curso } = req.params;
             const { id_turma, id_curso, turno } = req.body;
                 await knex('pertence')
-                        .where('id_turma', id)
+                        .where('id_turma', turma)
+                            .where('id_curso', curso)
                             .update({
                                 id_turma: id_turma,
                                 id_curso: id_curso,

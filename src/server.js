@@ -1,11 +1,36 @@
 const express = require('express');
-const routes = require('./routes');
+
+
+//routes
+const InstituicaoRotues = require('./routes/InstituicaoRoutes/routes');
+const DisciplinaRoutes = require('./routes/DisciplinaRoutes/routes');
+const HorariaRoutes = require('./routes/HorarioRoutes/routes');
+const CadastroRoutes = require('./routes/CadastroRoutes/routes');
+const CursoRoutes = require('./routes/CursoRoutes/routes');
+const TurmaRoutes = require('./routes/TurmaRoutes/routes');
+const DisciplinaCursoRoutes = require('./routes/ConnectionDisciplinaCursoRoutes/routes');
+const ConnectionTurmaCursoRoutes = require('./routes/ConnectionTurmaCursoRoutes/routes');
+const ConnectionTurmaAlunoRoutes = require('./routes/ConnectionTurmaAlunoRoutes/routes');
+
+
 
 const app = express();
 
 
 app.use(express.json());
-app.use(routes);
+
+app.use(
+        InstituicaoRotues, 
+        DisciplinaRoutes,
+        HorariaRoutes,
+        CadastroRoutes,
+        CursoRoutes,
+        TurmaRoutes,
+        DisciplinaCursoRoutes,
+        ConnectionTurmaCursoRoutes,
+        ConnectionTurmaAlunoRoutes
+        );
+
 
 
 //tratamento de error

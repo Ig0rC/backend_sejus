@@ -1,4 +1,4 @@
-const knex = require('../database/index');
+const knex = require('../../database/index');
 
 
 
@@ -7,6 +7,7 @@ module.exports = {
     async cadastrar(req, res, next) {
 
         try {
+            console.log('disciplina')
             const ddi = '015'
             const situacao = 'INATIVO';
             const {

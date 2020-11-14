@@ -2,19 +2,19 @@ const knex = require('../../database/index');
 
 module.exports  = {
     async CriarSemestre(req, res, next){
-        try {
-            const {
-                semestre,
-                ano
-            } = req.body;
+         try {
+             const {
+                 semestre,
+                 ano
+             } = req.body;
             
-            await knex('semestre').insert({
-                semestre, ano
-            });
-            res.status(201).send();
-        } catch (error) {
-            next(error);
-        }
+             await knex('semestre').insert({
+                 semestre, ano
+             });
+             res.status(201).send();
+         } catch (error) {
+             next(error);
+         }
     },
     async BuscarSemestreAll(req, res, next){
         try {

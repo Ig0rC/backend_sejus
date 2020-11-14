@@ -12,15 +12,20 @@ const DisciplinaCursoRoutes = require('./routes/ConnectionDisciplinaCursoRoutes/
 const ConnectionTurmaCursoRoutes = require('./routes/ConnectionTurmaCursoRoutes/routes');
 const ConnectionTurmaAlunoRoutes = require('./routes/ConnectionTurmaAlunoRoutes/routes');
 const SemestreRoutes = require('./routes/SemestreRoutes/routes');
-const CoodernaRoutes = require('./routes/CoodernaRoutes/routes')
-
+const CoodernaRoutes = require('./routes/CoodernaRoutes/routes');
+const ProfessorRoutes = require('./routes/ProfessorRoutes/routes');
+const LecionaRoutes = require('./routes/LecionaRotues/LecionaRoutes');
+const AuthRoutes = require('./routes/Authroutes/routes');
+const PessoasRoutes = require('./routes/PessoaController/routes');
+const AdministradorRoutes =require('./routes/AdministradorRoutes/routes')
 
 const app = express();
 
 
 app.use(express.json());
 
-app.use(
+app.use
+(
         InstituicaoRotues, 
         DisciplinaRoutes,
         HorariaRoutes,
@@ -31,8 +36,13 @@ app.use(
         ConnectionTurmaCursoRoutes,
         ConnectionTurmaAlunoRoutes,
         SemestreRoutes,
-        CoodernaRoutes
-        );
+        CoodernaRoutes,
+        ProfessorRoutes,
+        LecionaRoutes,
+        AuthRoutes,
+        PessoasRoutes,
+        AdministradorRoutes
+);
 
 
 

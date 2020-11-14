@@ -1,10 +1,26 @@
-const knex = require('../../database/index')
+const knex = require('../../database/index');
+
 
 
 module.exports = {
+   
     async createInstituicao(req, res, next) {
+        
         try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
 
+            if(validation.length === 0){
+                next(error);
+            }
+ 
             const {
                 id_tipo_telefone,
                 ddd,
@@ -112,8 +128,22 @@ module.exports = {
     },
     async instituicaoAll(req, res, next) {
         try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
+ 
             const { id_instituicao, page = 1 } = req.query;
-            //paginação
+         
             const query = knex('instituicao')
                 .limit(5)
                 .offset((page - 1) * 5);
@@ -137,7 +167,7 @@ module.exports = {
             return res.json(results);
 
         } catch (error) {
-
+            next(error)
         }
     },
     async deleteInstituicao(req, res, next) {
@@ -187,6 +217,20 @@ module.exports = {
     async UpdateInstituicao(req, res, next){
 
         try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
+ 
             const { id } = req.params;
             const { nome, responsavel, unidade, email} = req.body;
     
@@ -206,6 +250,6 @@ module.exports = {
             next(error);
         }
       
-    }
+    },
 
 }

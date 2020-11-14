@@ -1,5 +1,5 @@
 const knex = require('../../database/index');
-
+const bcrypt = require('bcryptjs')
 
 
 
@@ -9,7 +9,7 @@ module.exports = {
         try {
             console.log('disciplina')
             const ddi = '015'
-            const situacao = 'INATIVO';
+            const situacao = false;
             const {
                 cpf,
                 nome,
@@ -19,7 +19,7 @@ module.exports = {
                 sexo,
                 numero_rg,
                 email,
-                senha,
+                senhaemail,
                 nome_tipo_login,
                 orgao_emissor,
                 uf,
@@ -63,6 +63,8 @@ module.exports = {
                 numero_rg, orgao_emissor, uf
             });
             // insert tabela email;
+            const senha = bcrypt.hashSync(senhaemail, 2)
+            console.log(senha)
             await knex('login').insert({
                 email, senha, id_tipo_login
             });
@@ -244,7 +246,7 @@ module.exports = {
                                 await knex('contato_emergencial').insert({
                                     nome, id_telefone
                                 })
-                                console.log("ze ruela")
+                           
                     }
                 }
 
@@ -262,7 +264,6 @@ module.exports = {
                                     dado_acessibilidade: dado_acessibilidade,
                                     outros: outros
                         })
-                        console.log('porra')
                     for(let i = 0; i < busca_id_acessibilidade.length; i++){
                         id_acessibilidade = busca_id_acessibilidade[i].id_acessibilidade;
                         console.log(id_acessibilidade);

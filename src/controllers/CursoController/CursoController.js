@@ -1,10 +1,24 @@
 const knex = require('../../database/index');
+const AuthMiddleware = require('../../middlewares/AuthMiddlewares')
 
 
-    module.exports = {
+module.exports = {
         async cadastrarCurso(req, res, next){
-        
             try {
+                const authorization  = req.auth;
+                const validation =  
+                        await 
+                        knex
+                        .select('administrador.cpf_administrador')
+                        .from('administrador')
+                        .where('administrador.cpf_administrador', authorization)             
+                        .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                        .where('pessoa.situacao', true)
+    
+                if(validation.length === 0){
+                    next(error);
+                }
+     
                 const {
                     nome_curso,
                     duracao_semestres,
@@ -12,12 +26,12 @@ const knex = require('../../database/index');
                     nivel, 
                     carga_horaria
                 } = req.body
-            
+                
                     await knex('curso').insert({
                         nome_curso, duracao_semestres, periodo, nivel, carga_horaria
                     })
         
-                
+                   
                 res.status(201).send();
             } catch (error) {
                 next(error);
@@ -26,9 +40,8 @@ const knex = require('../../database/index');
         async buscarCursos(req, res, next){
             try {
                 const result = await knex('curso')
-               
-
-                    return res.json(result);
+                console.log(AuthMiddleware.req.auth)
+                    return res.send(result);
             } catch (error) {   
                     next(error)
             }
@@ -47,6 +60,20 @@ const knex = require('../../database/index');
             }
         },
         async deletaCurso(req, res, next){
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
+ 
             try {
                 const { id } = req.params;
 
@@ -60,6 +87,20 @@ const knex = require('../../database/index');
             }
         },
         async AtualizarCurso(req, res, next){
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
+ 
             try {
                 const { id } = req.params;
                 const {

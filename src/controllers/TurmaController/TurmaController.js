@@ -4,6 +4,20 @@ const knex = require('../../database/index');
 module.exports = {
     async criarTurma(req, res, next){
         try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
+ 
             const {
                 nome_turma, 
                 data_ingresso
@@ -35,6 +49,19 @@ module.exports = {
     },
     async buscarTurmas(req, res, next){
         try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
             const result = await knex  
                 .select('id_turma','nome_turma', 'data_ingresso')
                 .from('turma')
@@ -60,6 +87,19 @@ module.exports = {
     },
     async AtualizarTurmas(req,res,next){
         try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
             const { id } = req.params;
             const { nome_turma } = req.body;
             const id_turma = id; 
@@ -76,6 +116,19 @@ module.exports = {
     },
     async deleteTurma(req, res, next){
         try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
             const { id } = req.params;
 
             await knex('turma')

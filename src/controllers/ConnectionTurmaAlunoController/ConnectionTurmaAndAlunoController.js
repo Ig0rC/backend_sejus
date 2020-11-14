@@ -39,7 +39,7 @@ module.exports = {
     async UpdateTurma(req, res, next){
         try {
             const { id, turma } = req.params;
-            console.log('foi')
+            
             await knex('participa')
                 .where('cpf_aluno', id)
                 .update('id_turma', turma); 

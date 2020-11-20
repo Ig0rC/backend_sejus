@@ -9,14 +9,15 @@ module.exports = {
         const { email, password  }= req.body;
      
         const user = await 
-        knex.select('login.*')
+        knex.select('login.*', 'tipo_login.id_tipo_login')
                        .where('login.email', email)
                        .from('login')
                        .join('pessoa', 'pessoa.login', '=', 'login.id_login')
+                       .join('tipo_login', 'tipo_login.id_tipo_login', '=', 'login.id_tipo_login')
                        .where('pessoa.situacao', true);
         
 
-
+        console.log(user)
         const result = user[0].senha
   
         const userResult = user[0].id_login;

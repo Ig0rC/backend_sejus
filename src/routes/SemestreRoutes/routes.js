@@ -6,6 +6,12 @@ const SemestreController = require('../../controllers/SemestreController/Semestr
 SemestreRoutes.post('/semestre', SemestreController.CriarSemestre);
 SemestreRoutes.get('/semestre/:semestre/:ano' , SemestreController.SelecionaSemestre);
 SemestreRoutes.put('/semestre/:idsemestre/:idano' , SemestreController.AtualizarSemestre);
+SemestreRoutes.get('/semestre', SemestreController.BuscarSemestreAll)
+
+
+
+
+
 SemestreRoutes.delete('/semestre/:semestre/:ano' , SemestreController.DeletaSemestre);
 
 

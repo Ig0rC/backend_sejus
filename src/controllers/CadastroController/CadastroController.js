@@ -318,7 +318,7 @@ module.exports = {
 
                 } = req.body
 
-                const cpf_aluno = cpf;                // ACESSIBILIDADE
+                const cpf_aluno = cpf;
                 const ddiSOS = '015';
                
 
@@ -349,7 +349,7 @@ module.exports = {
                         const id_telefone = busca_id_contato_sos[i].id_telefone;
                         id_contato = id_telefone;
                         await knex('contato_emergencial').insert({
-                            nome: nome_SOS,
+                            nome_ce: nome_SOS,
                             id_telefone: id_contato
                         })
 

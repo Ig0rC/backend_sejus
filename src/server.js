@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 
 
 //routes
@@ -17,10 +18,17 @@ const ProfessorRoutes = require('./routes/ProfessorRoutes/routes');
 const LecionaRoutes = require('./routes/LecionaRotues/LecionaRoutes');
 const AuthRoutes = require('./routes/Authroutes/routes');
 const PessoasRoutes = require('./routes/PessoaController/routes');
-const AdministradorRoutes =require('./routes/AdministradorRoutes/routes')
+const AdministradorRoutes = require('./routes/AdministradorRoutes/routes')
+
 
 const app = express();
 
+const corsOptions = {
+    exposedHeaders: 'count',
+   
+  };
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 

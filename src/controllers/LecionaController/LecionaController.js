@@ -4,7 +4,6 @@ const knex = require('../../database/index');
 module.exports = {
     async ConectarProfessorDisciplina(req, res, next){
         try {
-            console.log('ok')
             const { disciplina , cpfp , idturma, semestre, ano } = req.params;
       
            console.log(disciplina, cpfp, idturma, semestre, ano);

@@ -4,22 +4,22 @@ const knex = require('../../database/index');
 
 module.exports = {
    
-    async createInstituicao(req, res, next) {
+    async CriarInstituicao(req, res, next) {
         
         try {
-            const authorization  = req.auth;
-            const validation =  
-                    await 
-                    knex
-                    .select('administrador.cpf_administrador')
-                    .from('administrador')
-                    .where('administrador.cpf_administrador', authorization)             
-                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
-                    .where('pessoa.situacao', true)
+            // const authorization  = req.auth;
+            // const validation =  
+            //         await 
+            //         knex
+            //         .select('administrador.cpf_administrador')
+            //         .from('administrador')
+            //         .where('administrador.cpf_administrador', authorization)             
+            //         .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+            //         .where('pessoa.situacao', true)
 
-            if(validation.length === 0){
-                next(error);
-            }
+            // if(validation.length === 0){
+            //     next(error);
+            // }
  
             const {
                 id_tipo_telefone,
@@ -39,22 +39,22 @@ module.exports = {
             } = req.body;
 
             //validacao de instituicao;
-            const busca_validation_duplicate = await knex
-                .select('id_instituicao')
-                .from('instituicao')
-                .where('nome', 'ilike', '%' + nome + '%')
-                .andWhere('responsavel', 'ilike', '%' + responsavel + '%')
-                .andWhere('unidade', 'ilike', '%' + unidade + '%')
-                .andWhere('email', 'ilike', '%' + email + '%');
+            // const busca_validation_duplicate = await knex
+            //     .select('id_instituicao')
+            //     .from('instituicao')
+            //     .where('nome', 'ilike', '%' + nome + '%')
+            //     .andWhere('responsavel', 'ilike', '%' + responsavel + '%')
+            //     .andWhere('unidade', 'ilike', '%' + unidade + '%')
+            //     .andWhere('email', 'ilike', '%' + email + '%');
 
-            let cachevalidation;
+            // let cachevalidation;
 
-            for (let i = 0; busca_validation_duplicate.length; i++) {
-                cachevalidation = busca_validation_duplicate[i].id_instituicao
-                console.log(cachevalidation);
-            }
+            // for (let i = 0; busca_validation_duplicate.length; i++) {
+            //     cachevalidation = busca_validation_duplicate[i].id_instituicao
+            //     console.log(cachevalidation);
+            // }
 
-            if (cachevalidation === undefined) {
+            // if (cachevalidation === undefined) {
                 const ddi = +55
 
                 // insert tabela telefone
@@ -70,8 +70,8 @@ module.exports = {
                     cep, estado, cidade, bairro, quadra, numero_endereco, complemento
                 })
 
-                let i = 0;
-                if (i == 0) {
+                 let i = 0;
+           
                     const busca_id_instituicao_cadastro = await knex
                         .select('id_instituicao')
                         .from('instituicao')
@@ -101,12 +101,10 @@ module.exports = {
                             complemento: complemento,
                         });
 
-                    const id_endereco = busca_id_endereco_instituicao[i].id_endereco;
-                    console.log(id_endereco);
-                    const id_telefone = busca_id_instituicao_telefone[i].id_telefone;
-                    console.log(id_telefone)
+                    const id_endereco = busca_id_endereco_instituicao[0].id_endereco;
+                    const id_telefone = busca_id_instituicao_telefone[0].id_telefone;
                     const id_instituicao = busca_id_instituicao_cadastro[i].id_instituicao;
-                    console.log(id_instituicao)
+ 
 
 
                     await knex('telefone_instituicao').insert({
@@ -115,9 +113,9 @@ module.exports = {
                     await knex('endereco_instituicao').insert({
                         id_instituicao, id_endereco
                     })
-                }
+                // }
                 return res.status(201).send();
-            }
+            // }
 
             next(error);
 
@@ -126,10 +124,10 @@ module.exports = {
 
         }
     },
-    async instituicaoAll(req, res, next) {
+    async BuscarInstituicoes(req, res, next) {
         try {
-            const authorization  = req.auth;
-            const validation =  
+             const authorization  = req.auth;
+             const validation =  
                     await 
                     knex
                     .select('administrador.cpf_administrador')
@@ -138,12 +136,12 @@ module.exports = {
                     .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                     .where('pessoa.situacao', true)
 
-            if(validation.length === 0){
+            if(!validation){
                 next(error);
             }
- 
-            const { id_instituicao, page = 1 } = req.query;
-         
+           
+            const { id_instituicao,  page  } = req.params;
+
             const query = knex('instituicao')
                 .limit(5)
                 .offset((page - 1) * 5);
@@ -158,14 +156,13 @@ module.exports = {
 
             }
             const [count] = await countObject;
+            
+            res.header('count', count["count"]);
 
-            res.header('X-total-count', count["count"]);
-            console.log(count);
-
+            
             const results = await query;
 
             return res.json(results);
-
         } catch (error) {
             next(error)
         }
@@ -174,6 +171,7 @@ module.exports = {
 
         try {
             const { id } = req.params;
+           
             const id_instituicao = id;
 
             await knex('endereco_instituicao')
@@ -182,16 +180,16 @@ module.exports = {
 
             await knex('telefone_instituicao')
                 .where({ id_instituicao })
-                .del();
+                .del()
+
             await knex('instituicao')
                 .where({ id_instituicao })
                 .del();
 
-            return res.status(201).send()
+            return res.status(201).send('foi deletado')
         } catch (error) {
             next(error);
         }
-
     },
     async selecionaInstituicao(req, res, next){
        
@@ -205,8 +203,10 @@ module.exports = {
                 .where('instituicao.id_instituicao', id)
                 .join('endereco_instituicao', 'endereco_instituicao.id_instituicao', '=', 'instituicao.id_instituicao')
                 .join ('telefone_instituicao',  'telefone_instituicao.id_instituicao', '=','instituicao.id_instituicao')
-                .select('instituicao.*', 'endereco_instituicao.*', 'telefone_instituicao.*')
-            
+                .join ('telefone',  'telefone.id_telefone', '=','telefone_instituicao.id_telefone')
+                .join('endereco', 'endereco.id_endereco', '=', 'endereco_instituicao.id_endereco')
+                .select('instituicao.*', 'endereco.*', 'telefone.*')
+                console.log(selecionarInst)
 
                 return res.json(selecionarInst)
         } catch (error) {

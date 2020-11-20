@@ -3,19 +3,19 @@ const knex = require('../database/index');
 module.exports = {
     async Ativar(req, res, next){
         try {
-            const authorization  = req.auth;
-            const validation =  
-                    await 
-                    knex
-                    .select('administrador.cpf_administrador')
-                    .from('administrador')
-                    .where('administrador.cpf_administrador', authorization)             
-                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
-                    .where('pessoa.situacao', true)
+            // const authorization  = req.auth;
+            // const validation =  
+            //         await 
+            //         knex
+            //         .select('administrador.cpf_administrador')
+            //         .from('administrador')
+            //         .where('administrador.cpf_administrador', authorization)             
+            //         .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+            //         .where('pessoa.situacao', true)
 
-            if(validation.length === 0){
-                next(error);
-            }
+            // if(validation.length === 0){
+            //     next(error);
+            // }
  
 
 

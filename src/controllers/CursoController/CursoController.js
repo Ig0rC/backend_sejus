@@ -5,20 +5,6 @@ const AuthMiddleware = require('../../middlewares/AuthMiddlewares')
 module.exports = {
         async cadastrarCurso(req, res, next){
             try {
-                const authorization  = req.auth;
-                const validation =  
-                        await 
-                        knex
-                        .select('administrador.cpf_administrador')
-                        .from('administrador')
-                        .where('administrador.cpf_administrador', authorization)             
-                        .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
-                        .where('pessoa.situacao', true)
-    
-                if(validation.length === 0){
-                    next(error);
-                }
-     
                 const {
                     nome_curso,
                     duracao_semestres,
@@ -30,8 +16,8 @@ module.exports = {
                     await knex('curso').insert({
                         nome_curso, duracao_semestres, periodo, nivel, carga_horaria
                     })
-        
-                   
+                  
+       
                 res.status(201).send();
             } catch (error) {
                 next(error);
@@ -39,9 +25,30 @@ module.exports = {
         },
         async buscarCursos(req, res, next){
             try {
-                const result = await knex('curso')
-                console.log(AuthMiddleware.req.auth)
-                    return res.send(result);
+                //  const result = await knex('curso')
+                const { page = 1, id_curso  } = req.query;
+
+                const query = knex('curso')
+                .limit(5)
+                .offset((page - 1) * 5);
+                    //count
+                    const countObject = knex('curso').count()
+
+                    if (id_curso) {
+                        query
+                            .where({ id_curso })
+
+                        countObject.where({ id_curso })
+
+                    }
+                    const [count] = await countObject;
+
+                    res.header('count', count["count"]);
+         
+
+                    const results = await query;
+
+                    return res.json(results);
             } catch (error) {   
                     next(error)
             }

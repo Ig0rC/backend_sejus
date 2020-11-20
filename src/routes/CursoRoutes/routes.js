@@ -5,7 +5,7 @@ const CursoController = require('../../controllers/CursoController/CursoControll
 
 
 CursoRoutes.post('/cursos', CursoController.cadastrarCurso);
-CursoRoutes.get('/cursos', CursoController.buscarCursos);
+CursoRoutes.get('/cursos/:page', CursoController.buscarCursos);
 CursoRoutes.get('/cursos/:id', CursoController.selecionaCurso);
 CursoRoutes.delete('/cursos/:id', CursoController.deletaCurso);    
 CursoRoutes.put('/cursos/:id', CursoController.AtualizarCurso);  

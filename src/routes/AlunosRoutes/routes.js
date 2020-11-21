@@ -5,7 +5,7 @@ const AlunoController = require('../../controllers/AlunoController/AlunoControll
 
 
 
-AlunosRoutes.get('/alunos', AlunoController.BuscarAlunos)
+AlunosRoutes.get('/alunos/:page', AlunoController.BuscarAlunos)
 
 
 

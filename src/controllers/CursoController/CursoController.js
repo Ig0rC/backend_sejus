@@ -25,12 +25,11 @@ module.exports = {
         },
         async buscarCursos(req, res, next){
             try {
-                //  const result = await knex('curso')
-                const { page = 1, id_curso  } = req.query;
+                const { page, id_curso  } = req.params;
 
                 const query = knex('curso')
-                .limit(5)
-                .offset((page - 1) * 5);
+                    .limit(5)
+                    .offset((page - 1) * 5);
                     //count
                     const countObject = knex('curso').count()
 

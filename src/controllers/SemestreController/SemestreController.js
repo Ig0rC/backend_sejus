@@ -27,14 +27,13 @@ module.exports  = {
     },
     async SelecionaSemestre(req, res, next){
         try {
-            const { semestre , ano } = req.params;
+            const { semestre  } = req.params;
 
             const result = 
                 await knex('semestre')
                         .where
                         ({
                             semestre:semestre,
-                            ano: ano
                         })
 
                 res.json(result);

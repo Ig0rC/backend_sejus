@@ -6,6 +6,7 @@ const AuthMiddlewares =  (req, res, next) => {
     const { authorization } = req.headers;
 
     if(!authorization){ 
+        console.log('blz')
         return res.sendStatus(401);
     }
     const token = authorization.replace('Bearer', '').trim();

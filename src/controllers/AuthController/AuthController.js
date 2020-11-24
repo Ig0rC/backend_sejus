@@ -17,7 +17,6 @@ module.exports = {
                        .where('pessoa.situacao', true);
         
 
-        console.log(user)
         const result = user[0].senha
   
         const userResult = user[0].id_login;

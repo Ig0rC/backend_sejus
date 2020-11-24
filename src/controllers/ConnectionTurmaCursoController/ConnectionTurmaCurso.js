@@ -3,14 +3,13 @@ const knex = require('../../database/index');
 module.exports = {
     async CadastrarTurmaCurso (req, res, next){
         try {
-            const { turma, curso } = req.params;
-            const { turno } = req.body;
+            const { turma, curso, turno } = req.params;
             const id_curso = curso;
             const id_turma = turma;
                 await knex('pertence').insert({
                     id_curso: id_curso,
                     id_turma: id_turma,
-                    turno
+                    turno: turno
                 })
             res.status(201).send();
         } catch (error) {
@@ -87,6 +86,21 @@ module.exports = {
             next(error)
         }
 
+    },
+    async BuscarTurmasDoCurso(req, res, next){
+        try {
+            const { idc } = req.params;
+                const resultado = await knex
+                    .select('turma.*', 'pertence.turno')
+                        .from('curso')
+                            .join('pertence', 'pertence.id_curso', '=', 'curso.id_curso')
+                            .join('turma', 'turma.id_turma', '=', 'pertence.id_turma')
+                                .where('curso.id_curso', idc);
+
+            return res.json(resultado)
+        } catch (error) {
+            next(error)
+        }
     }
     
 }

@@ -129,5 +129,33 @@ module.exports = {
             } catch (error) {
                 next(error);
             }
+        },
+        async buscarCursosDisciplina(req, res, next){
+            try {
+                const { idc } = req.params
+                const response = await 
+                    knex 
+                        .select('turma.*', 'disciplina.*')
+                            .from('curso')
+                                .join('pertence', 'pertence.id_curso', '=', 'curso.id_curso')
+                                .join('turma', 'turma.id_turma', '=', 'pertence.id_turma')
+                                .join('disciplina_curso', 'disciplina_curso.id_curso', '=', 'curso.id_curso')
+                                .join('disciplina', 'disciplina.id_disciplina', '=', 'disciplina_curso.id_disciplina')
+                                    .where('curso.id_curso', idc)
+
+                res.json(response)
+            } catch (error) {
+                next(error)   
+            }
+        },
+        async BuscarCursosTurmas(req, res, next){
+            try {
+                const result = await 
+                    knex('turma')
+    
+                return res.json(result);
+            } catch (error) {
+                next(error)
+            }
         }
     }

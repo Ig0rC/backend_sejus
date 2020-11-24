@@ -5,14 +5,14 @@ module.exports = {
      async CadastrarDisciplina(req, res, next){
         try {
             const {
-                nome, 
+                nome_disciplina, 
                 horario_aula,
                 data,
                 horas,
              } = req.body
     
              await knex('disciplina').insert({
-                 nome, horario_aula, data, horas
+                 nome_disciplina, horario_aula, data, horas
              });
 
              res.status(201).send();
@@ -35,7 +35,18 @@ module.exports = {
      },
      async BuscarDisciplinas(req,res,next){
          try {
-             const result = await knex('disciplina')
+             const { page } = req.params;
+             const result = 
+                await knex('disciplina')
+                .limit(16)
+                .offset((page - 1) * 16)
+
+                const [count] = 
+                    await knex('disciplina')
+                            .from('disciplina')
+                                .count();
+                 
+                res.header('count', count["count"]);           
 
              res.json(result);
          } catch (error) {
@@ -66,5 +77,15 @@ module.exports = {
          } catch (error) {
              next(error)
          }
+     },
+     async BuscarDisciplinaLeciona(req, res, next){
+         try {
+             const result = await knex('disciplina');
+
+             res.json(result);
+         } catch (error) {
+             next(error)
+         }
      }
+
 }

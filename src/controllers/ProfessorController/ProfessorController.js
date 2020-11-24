@@ -8,6 +8,7 @@ module.exports = {
             const result = await knex
             .select('pessoa.cpf','pessoa.nome','pessoa.nome_social' )
             .from('pessoa')
+            .where('pessoa.situacao', true)
             .join('login', 'login.id_login', '=', 'pessoa.login')
             .join('tipo_login', 'tipo_login.id_tipo_login', '=' , 'login.id_tipo_login')
             .where('tipo_login.nome_tipo_login', 'PROFESSOR');     
@@ -52,4 +53,22 @@ module.exports = {
         }
 
     },
+    async SelectLeciona(req, res, next){
+        try {
+            console.log('entrou porra')
+            const authorization  = req.auth;
+            console.log(authorization)
+            const response = 
+                await knex('leciona')
+                    .select('turma.*', 'disciplina.nome_disciplina', 'disciplina.id_disciplina', 
+                    'disciplina.horario_aula', 'leciona.semestre', 'leciona.ano')
+                    .join('disciplina', 'disciplina.id_disciplina', '=', 'leciona.id_disciplina')
+                    .join('turma', 'turma.id_turma', '=', 'leciona.id_turma')
+                    .where('cpf_professor', authorization)
+
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }, 
 }

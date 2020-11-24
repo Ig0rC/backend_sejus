@@ -4,7 +4,7 @@ const SemestreRoutes = express.Router();
 const SemestreController = require('../../controllers/SemestreController/SemestreController')
 
 SemestreRoutes.post('/semestre', SemestreController.CriarSemestre);
-SemestreRoutes.get('/semestre/:semestre/:ano' , SemestreController.SelecionaSemestre);
+SemestreRoutes.get('/semestre/:semestre' , SemestreController.SelecionaSemestre);
 SemestreRoutes.put('/semestre/:idsemestre/:idano' , SemestreController.AtualizarSemestre);
 SemestreRoutes.get('/semestre', SemestreController.BuscarSemestreAll)
 

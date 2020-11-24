@@ -58,14 +58,26 @@ module.exports = {
                     .where('administrador.cpf_administrador', authorization)             
                     .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                     .where('pessoa.situacao', true)
-
+                  
             if(validation.length === 0){
                 next(error);
             }
+            const { page = 1  } = req.params;
+
             const result = await knex  
-                .select('id_turma','nome_turma', 'data_ingresso')
+                .select('turma.id_turma','turma.nome_turma', 'turma.data_ingresso')
                 .from('turma')
+                .limit(5)
+                .offset((page - 1) * 5)
+
+            const [count] = 
+                await knex('turma')
+                    .from('turma')
+                    .count();
             
+                res.header('count', count["count"]);
+
+
             return res.json(result)
         } catch (error) {
             next(error)            
@@ -73,6 +85,7 @@ module.exports = {
     },
     async selecionaTurma(req, res, next){
         try {
+            console.log('ok')
             const { id } =req.params;
             const id_turma = id
             const result = await knex  
@@ -158,5 +171,16 @@ module.exports = {
             next(error)
         }
     },
+    async buscarTurmasNoPaginacao(req, res, next){
+        try{
+            const result = await knex('turma')
+
+            return res.json(result);
+        }catch (error){
+            next(error)
+        }
+    },
+    
+    
    
-}
+} 

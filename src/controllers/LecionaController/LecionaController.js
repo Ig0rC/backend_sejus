@@ -4,13 +4,13 @@ const knex = require('../../database/index');
 module.exports = {
     async ConectarProfessorDisciplina(req, res, next){
         try {
-            const { disciplina , cpfp , idturma, semestre, ano } = req.params;
+            const { disciplina , cpf_professor , id_turma, semestre, ano } = req.body;
       
-           console.log(disciplina, cpfp, idturma, semestre, ano);
+           console.log(disciplina, cpf_professor, id_turma, semestre, ano);
             await knex('leciona').insert({
                 id_disciplina: disciplina,
-                cpf_professor: cpfp,
-                id_turma: idturma, 
+                cpf_professor: cpf_professor,
+                id_turma: id_turma, 
                 semestre: semestre, 
                 ano: ano, 
             });
@@ -19,5 +19,5 @@ module.exports = {
         } catch (error) {
             next(error)
         }
-    }
+    }, 
 }

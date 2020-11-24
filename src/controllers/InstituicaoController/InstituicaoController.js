@@ -127,6 +127,7 @@ module.exports = {
     async BuscarInstituicoes(req, res, next) {
         try {
              const authorization  = req.auth;
+             console.log(authorization)
              const validation =  
                     await 
                     knex
@@ -204,8 +205,9 @@ module.exports = {
                 .join('endereco_instituicao', 'endereco_instituicao.id_instituicao', '=', 'instituicao.id_instituicao')
                 .join ('telefone_instituicao',  'telefone_instituicao.id_instituicao', '=','instituicao.id_instituicao')
                 .join ('telefone',  'telefone.id_telefone', '=','telefone_instituicao.id_telefone')
+                .join('tipo_telefone', 'tipo_telefone.id_tipo_telefone', '=', 'telefone.id_tipo_telefone')
                 .join('endereco', 'endereco.id_endereco', '=', 'endereco_instituicao.id_endereco')
-                .select('instituicao.*', 'endereco.*', 'telefone.*')
+                .select('instituicao.*', 'endereco.*', 'telefone.*', 'tipo_telefone.nome_tipo_telefone')
                 console.log(selecionarInst)
 
                 return res.json(selecionarInst)
@@ -251,5 +253,75 @@ module.exports = {
         }
       
     },
+    async IncluirCursoNaInstituicao(req, res, next){
+        try {
+            const { idCurso, idInstituicao, situacao_curso_instituicao } = req.body;
+
+            await knex('instituicao_curso').insert({
+                id_instituicao: idInstituicao,
+                id_curso: idCurso,
+                situacao_curso_instituicao: situacao_curso_instituicao
+            })
+
+            return res.status(201).send('ok')
+        } catch (error) {
+            next(error)
+        }
+    },
+    async PerfilInstituicaoCursos(req, res, next){
+        try {
+            const { id_instituicao } = req.params
+            const response = await 
+                knex.select('curso.*', 'instituicao_curso.situacao_curso_instituicao')
+                        .from('instituicao')
+                        .join('instituicao_curso', 'instituicao_curso.id_instituicao', '=', 'instituicao.id_instituicao')
+                        .join('curso', 'curso.id_curso', '=', 'instituicao_curso.id_curso')
+                        .where(
+                            'instituicao.id_instituicao', id_instituicao
+                        )
+                
+              return  res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }, 
+    async ExcluirInstituicaoCursos(req, res, next){
+        try {
+            const {id_instituicao, id_curso } = req.params;
+            await knex('instituicao_curso')
+                        .where({
+                            id_instituicao:id_instituicao,
+                            id_curso: id_curso
+                        }).del();
+            return res.status(201).send();
+        } catch (error) {   
+            next(eror)
+        }
+    },
+    async DesativarCursoInstituicao(req,res,next){
+        try {
+            const { id_instituicao, id_curso, situacao } = req.params;
+            await knex('instituicao_curso')
+                    .where({
+                        id_instituicao: id_instituicao,
+                        id_curso: id_curso
+                    })
+                    .update({
+                        situacao_curso_instituicao: situacao
+                    })
+                res.status(201).send('sucesso')
+        } catch (error) {
+            next(error)   
+        }
+    },
+    async BuscarCursospInstituicao(req, res, next){
+        try {
+            const response = await knex('curso');
+
+            return res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
 
 }

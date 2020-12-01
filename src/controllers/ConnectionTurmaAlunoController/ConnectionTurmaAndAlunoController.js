@@ -3,20 +3,41 @@ const knex = require('../../database/index');
 module.exports = {
     async ConexaoTA(req, res, next){
         try {
+            const cpf_aluno = req.auth;
             const {
-                CPFArrayAluno,
-                id_turma
-
-            } = req.body;
+                idTurma
+            } = req.params;
             
-    
-            for(let i = 0; i < CPFArrayAluno.length; i++){
-      
-                let cpf_aluno = CPFArrayAluno[i]
-                await knex('participa').insert({
-                    cpf_aluno, id_turma
+            await knex('participa').insert({
+                cpf_aluno, 
+                id_turma: idTurma
+            });
+
+            const response =
+                await knex('leciona')
+                    .where('id_turma', idTurma);
+            
+            for(let i = 0; i < response.length; i++){
+                await knex('faltas_aluno').insert({
+                    cpf_professor: response[i].cpf_professor,
+                    cpf_aluno: cpf_aluno,
+                    id_disciplina: response[i].id_disciplina,
+                    id_turma: idTurma,
+                    semestre: response[i].semestre,
+                    ano: response[i].ano,
+                    quantidade: 0
                 });
-            }
+                await knex('avalia').insert({
+                    cpf_aluno: cpf_aluno,
+                    id_disciplina: response[i].id_disciplina,
+                    cpf_professor: response[i].cpf_professor,
+                    nota: 0,
+                    ano: response[i].ano,
+                    semestre: response[i].semestre,
+                    bimestre: 'escolher',
+                    id_turma: idTurma
+                })
+            }  
         return res.status(201).send();
         } catch (error) {
             next(error)   

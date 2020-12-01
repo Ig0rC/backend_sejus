@@ -7,25 +7,27 @@ module.exports = {
     async CriarInstituicao(req, res, next) {
         
         try {
-            // const authorization  = req.auth;
-            // const validation =  
-            //         await 
-            //         knex
-            //         .select('administrador.cpf_administrador')
-            //         .from('administrador')
-            //         .where('administrador.cpf_administrador', authorization)             
-            //         .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
-            //         .where('pessoa.situacao', true)
+      
+            const cpf  = req.auth;
+            console.log(cpf)
+            const validation =  
+                    await 
+                    knex
+                    .select('pessoa.cpf')
+                    .from('pessoa')
+                    .andWhere('pessoa.situacao', true)
+                    .andWhere('pessoa.cpf', cpf)       
 
-            // if(validation.length === 0){
-            //     next(error);
-            // }
+            if(validation.length === 0){
+
+                next(error);
+            }
  
             const {
                 id_tipo_telefone,
                 ddd,
                 numero_telefone,
-                nome,
+                nome_instituicao,
                 responsavel,
                 unidade,
                 email,
@@ -37,24 +39,25 @@ module.exports = {
                 numero_endereco,
                 complemento
             } = req.body;
+            // validacao de instituicao;
+            const busca_validation_duplicate = await knex
+                .select('instituicao')
+                .from('instituicao')
+                .where('nome_instituicao', 'ilike', '%' + nome_instituicao + '%')
+                .andWhere('responsavel', 'ilike', '%' + responsavel + '%')
+                .andWhere('unidade', 'ilike', '%' + unidade + '%')
+                .andWhere('email', 'ilike', '%' + email + '%');
+       
+            console.log(busca_validation_duplicate)
+            let cachevalidation;
 
-            //validacao de instituicao;
-            // const busca_validation_duplicate = await knex
-            //     .select('id_instituicao')
-            //     .from('instituicao')
-            //     .where('nome', 'ilike', '%' + nome + '%')
-            //     .andWhere('responsavel', 'ilike', '%' + responsavel + '%')
-            //     .andWhere('unidade', 'ilike', '%' + unidade + '%')
-            //     .andWhere('email', 'ilike', '%' + email + '%');
+            for (let i = 0; busca_validation_duplicate.length; i++) {
+                cachevalidation = busca_validation_duplicate[i].id_instituicao
+                console.log(cachevalidation);
+            }
+            console.log(cachevalidation);
 
-            // let cachevalidation;
-
-            // for (let i = 0; busca_validation_duplicate.length; i++) {
-            //     cachevalidation = busca_validation_duplicate[i].id_instituicao
-            //     console.log(cachevalidation);
-            // }
-
-            // if (cachevalidation === undefined) {
+            if (cachevalidation === undefined) {
                 const ddi = +55
 
                 // insert tabela telefone
@@ -63,7 +66,7 @@ module.exports = {
                 });
                 // insert table instituicao
                 await knex('instituicao').insert({
-                    nome, responsavel, unidade, email
+                    nome_instituicao, responsavel, unidade, email
                 });
                 // insert table endereco
                 await knex('endereco').insert({
@@ -76,7 +79,7 @@ module.exports = {
                         .select('id_instituicao')
                         .from('instituicao')
                         .where({
-                            nome: nome,
+                            nome_instituicao: nome_instituicao,
                             responsavel: responsavel,
                             email: email
                         })
@@ -113,9 +116,9 @@ module.exports = {
                     await knex('endereco_instituicao').insert({
                         id_instituicao, id_endereco
                     })
-                // }
-                return res.status(201).send();
-            // }
+                    return res.status(201).send();
+                }
+            
 
             next(error);
 
@@ -127,19 +130,20 @@ module.exports = {
     async BuscarInstituicoes(req, res, next) {
         try {
              const authorization  = req.auth;
-             console.log(authorization)
              const validation =  
                     await 
                     knex
                     .select('administrador.cpf_administrador')
                     .from('administrador')
-                    .where('administrador.cpf_administrador', authorization)             
                     .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                     .where('pessoa.situacao', true)
+                    .where('pessoa.cpf', authorization)             
+
 
             if(!validation){
                 next(error);
             }
+        
            
             const { id_instituicao,  page  } = req.params;
 
@@ -195,7 +199,6 @@ module.exports = {
     async selecionaInstituicao(req, res, next){
        
         try {
-            console.log('alo')
             const { id } = req.params;
 
            
@@ -208,7 +211,6 @@ module.exports = {
                 .join('tipo_telefone', 'tipo_telefone.id_tipo_telefone', '=', 'telefone.id_tipo_telefone')
                 .join('endereco', 'endereco.id_endereco', '=', 'endereco_instituicao.id_endereco')
                 .select('instituicao.*', 'endereco.*', 'telefone.*', 'tipo_telefone.nome_tipo_telefone')
-                console.log(selecionarInst)
 
                 return res.json(selecionarInst)
         } catch (error) {
@@ -322,6 +324,15 @@ module.exports = {
         } catch (error) {
             next(error)
         }
-    }
+    },
+    async PesquisaInstituicao (req, res, next){
+        try {
+            const { pesqInsti } = req.body;
+          
 
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
 }

@@ -28,13 +28,12 @@ module.exports = {
     },
     async SelecionarDisciplinaCurso(req, res, next){
         try {
-            const { idD, idC} = req.params;
+            const { idC} = req.params;
             
   
             const result = 
                 await knex
-                        .select('disciplina.*', 'curso.*')
-                            .where('disciplina_curso.id_disciplina', idD)
+                        .select('disciplina.*')
                             .from('disciplina_curso')
                                 .join('disciplina', 'disciplina.id_disciplina', '=','disciplina_curso.id_disciplina')
                                     .join('curso', 'curso.id_curso', '=', 'disciplina_curso.id_curso')

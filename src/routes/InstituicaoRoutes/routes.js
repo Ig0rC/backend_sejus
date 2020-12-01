@@ -7,7 +7,7 @@ const instituicaoRoutes = express.Router();
 const InstituicaoController = require('../../controllers/InstituicaoController/InstituicaoController');
 
 
-instituicaoRoutes.post('/instituicao',  InstituicaoController.CriarInstituicao);
+instituicaoRoutes.post('/instituicao', AuthMiddlewares,  InstituicaoController.CriarInstituicao);
 instituicaoRoutes.delete('/instituicao/:id', InstituicaoController.deleteInstituicao);
 instituicaoRoutes.get('/instituicao/:page', AuthMiddlewares, InstituicaoController.BuscarInstituicoes);
 instituicaoRoutes.get('/instituicao/perfil/:id' , InstituicaoController.selecionaInstituicao);

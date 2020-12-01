@@ -6,13 +6,11 @@ module.exports = {
         try {
             const {
                 nome_disciplina, 
-                horario_aula,
-                data,
                 horas,
              } = req.body
     
              await knex('disciplina').insert({
-                 nome_disciplina, horario_aula, data, horas
+                 nome_disciplina, horas
              });
 
              res.status(201).send();
@@ -83,6 +81,15 @@ module.exports = {
              const result = await knex('disciplina');
 
              res.json(result);
+         } catch (error) {
+             next(error)
+         }
+     },
+     async BuscarDisciplinaCurso(req, res, next){
+         try {
+             const result = await knex('disciplina')
+             
+             res.json(result)
          } catch (error) {
              next(error)
          }

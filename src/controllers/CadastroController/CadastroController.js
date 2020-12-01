@@ -349,7 +349,7 @@ module.exports = {
                         const id_telefone = busca_id_contato_sos[i].id_telefone;
                         id_contato = id_telefone;
                         await knex('contato_emergencial').insert({
-                            nome_ce: nome_SOS,
+                            nome: nome_SOS,
                             id_telefone: id_contato
                         })
 
@@ -564,16 +564,13 @@ module.exports = {
                 }
 
                 const cpf_administrador = cpf;
-                const permissao = false;
 
 
                 await knex('administrador').insert({
-                    cpf_administrador, permissao
+                    cpf_administrador
                 });
 
-                await knex('cadastro_administrador').insert({
-                    cpf_administrador
-                })
+            
                 return res.status(201).send();
 
             }

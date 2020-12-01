@@ -34,7 +34,8 @@ module.exports = {
             if(validation_class_year.length == 0){
                 await knex('turma').insert({
                     nome_turma,
-                    data_ingresso
+                    data_ingresso,
+                    situacao_turma: "fechado"
                 })
                 res.status(201).send();
 
@@ -55,11 +56,12 @@ module.exports = {
                     knex
                     .select('administrador.cpf_administrador')
                     .from('administrador')
-                    .where('administrador.cpf_administrador', authorization)             
                     .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                     .where('pessoa.situacao', true)
                   
             if(validation.length === 0){
+                console.log('entrei')
+
                 next(error);
             }
             const { page = 1  } = req.params;
@@ -89,7 +91,7 @@ module.exports = {
             const { id } =req.params;
             const id_turma = id
             const result = await knex  
-                .select('nome_turma', 'data_ingresso')
+                .select('turma.*')
                 .from('turma')
                 .where('id_turma', id_turma);
             

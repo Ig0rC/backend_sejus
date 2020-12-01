@@ -1,3 +1,4 @@
+const { from } = require('../../database/index');
 const knex = require('../../database/index');
 const { SelecionaProfessor } = require('../PessoaController/PessoaController');
 
@@ -5,16 +6,31 @@ const { SelecionaProfessor } = require('../PessoaController/PessoaController');
 module.exports = {
     async BuscarProfessores(req, res, next){
         try {
+            console.log('ok')
+            const { page } = req.params;
+            console.log('buscar')
             const result = await knex
-            .select('pessoa.cpf','pessoa.nome','pessoa.nome_social' )
+            .select('pessoa.cpf','pessoa.nome','pessoa.nome_social','telefone.*')
             .from('pessoa')
             .where('pessoa.situacao', true)
             .join('login', 'login.id_login', '=', 'pessoa.login')
+            .join('telefone_pessoa', 'telefone_pessoa.cpf', '=', 'pessoa.cpf')
+            .join('telefone', 'telefone.id_telefone', '=', 'telefone_pessoa.id_telefone')
             .join('tipo_login', 'tipo_login.id_tipo_login', '=' , 'login.id_tipo_login')
-            .where('tipo_login.nome_tipo_login', 'PROFESSOR');     
+            .where('tipo_login.nome_tipo_login', 'PROFESSOR')
+            .limit(5)
+            .offset((page - 1) * 5)     
             
             
-               
+            const [count] = 
+                await knex('professor')
+                .from('professor')
+                .join('pessoa', 'pessoa.cpf', '=', 'professor.cpf_professor')
+                .where('pessoa.situacao', true)
+                .count();
+
+            res.header('count', count["count"]);
+
            return res.json(result)
         } catch (error) {
             next(error);
@@ -36,16 +52,18 @@ module.exports = {
             const { cpf } = req.params;
 
             const result = await knex
-            .select('pessoa.*', 'login.email', 'endereco.*', 'telefone.*')
-            .from('pessoa')
-            .join('login', 'login.id_login', '=', 'pessoa.login')
-            .join('tipo_login', 'tipo_login.id_tipo_login', '=' , 'login.id_tipo_login')
-            .join('endereco_pessoa', 'endereco_pessoa.cpf', '=', 'pessoa.cpf')
-            .join('endereco', 'endereco.id_endereco', '=', 'endereco_pessoa.id_endereco')
-            .join('telefone_pessoa', 'telefone_pessoa.cpf', '=', 'pessoa.cpf')
-            .join('telefone', 'telefone.id_telefone', '=', 'telefone_pessoa.id_telefone')
-            .join('tipo_telefone', 'tipo_telefone.id_tipo_telefone', '=', 'telefone.id_tipo_telefone')
-            .where('pessoa.cpf', cpf)
+                .select('pessoa.*', 'login.email', 'endereco.*', 'telefone.*', 'rg.*', 'professor.*')
+                .from('pessoa')
+                .join('login', 'login.id_login', '=', 'pessoa.login')
+                .join('professor', 'professor.cpf_professor', '=', 'pessoa.cpf')
+                .join('rg', 'rg.id_rg', '=', 'pessoa.id_rg')
+                .join('tipo_login', 'tipo_login.id_tipo_login', '=' , 'login.id_tipo_login')
+                .join('endereco_pessoa', 'endereco_pessoa.cpf', '=', 'pessoa.cpf')
+                .join('endereco', 'endereco.id_endereco', '=', 'endereco_pessoa.id_endereco')
+                .join('telefone_pessoa', 'telefone_pessoa.cpf', '=', 'pessoa.cpf')
+                .join('telefone', 'telefone.id_telefone', '=', 'telefone_pessoa.id_telefone')
+                .join('tipo_telefone', 'tipo_telefone.id_tipo_telefone', '=', 'telefone.id_tipo_telefone')
+                .where('pessoa.cpf', cpf)
             
             return res.json(result);
         } catch (error) {
@@ -53,22 +71,179 @@ module.exports = {
         }
 
     },
-    async SelectLeciona(req, res, next){
+    //METODO DE BUSCAR TURMAS PARA LANÇAR NOTAS OU FALTAS
+    async BuscarLeciona(req, res, next){
         try {
-            console.log('entrou porra')
             const authorization  = req.auth;
-            console.log(authorization)
             const response = 
                 await knex('leciona')
                     .select('turma.*', 'disciplina.nome_disciplina', 'disciplina.id_disciplina', 
-                    'disciplina.horario_aula', 'leciona.semestre', 'leciona.ano')
+                    'leciona.*')
                     .join('disciplina', 'disciplina.id_disciplina', '=', 'leciona.id_disciplina')
                     .join('turma', 'turma.id_turma', '=', 'leciona.id_turma')
                     .where('cpf_professor', authorization)
+
+            return res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    },
+    
+    //BUSCAR ALUNOS PARA LANÇAR NOTAS
+    async SelecionaLecionaNotas(req, res, next){
+        try {
+            const { idTurma, idDisciplina } = req.params;
+            const response = await 
+                knex
+                    .select( 'aluno.cpf_aluno', 'pessoa.nome', 'avalia.nota')
+                        .from('leciona')
+                            .join
+                            (
+                                'turma', 'turma.id_turma'
+                                    ,'=',
+                                'leciona.id_turma'
+                            )
+                            .join
+                            (
+                                'participa', 'participa.id_turma',
+                                    '=',
+                                'turma.id_turma'
+                            )
+                            .join
+                            (
+                                'aluno', 'aluno.cpf_aluno'
+                                    ,'=',
+                                'participa.cpf_aluno'   
+                            )
+                            .join
+                            (
+                                'pessoa', 'pessoa.cpf'
+                                    ,'=',
+                                'aluno.cpf_aluno'
+                            )
+                            .join
+                            (
+                                'avalia', 'avalia.cpf_aluno'
+                                    ,'=',
+                                'aluno.cpf_aluno' //COMO DECLAREI A TABELA ANTES NÃO É NECESSIARIO FAZER NOVAMENTE
+                            )
+                            //ID TURMA É ÚNICO
+                            .andWhere({
+                                'leciona.id_turma': idTurma
+                            })
+                            //ID DISCIPLINA NÃO É, PORÉM OS DOIS SÃO ÚNICOS
+                            .andWhere({
+                                'leciona.id_disciplina': idDisciplina
+                            })
+                            .andWhere({
+                                'avalia.id_disciplina': idDisciplina
+                            })
+                
 
             res.json(response)
         } catch (error) {
             next(error)
         }
-    }, 
+    },
+    async BuscarProfessoresInativados(req, res, next){
+        try {
+            const { page } = req.params;
+            const result = await knex
+            .select(
+                    'pessoa.cpf','pessoa.nome','pessoa.nome_social','pessoa.situacao',
+                    'telefone.*', 'login.email'
+                    )
+            .from('pessoa')
+            .where('pessoa.situacao', false)
+            .join('login', 'login.id_login', '=', 'pessoa.login')
+            .join('telefone_pessoa', 'telefone_pessoa.cpf', '=', 'pessoa.cpf')
+            .join('telefone', 'telefone.id_telefone', '=', 'telefone_pessoa.id_telefone')
+            .join('tipo_login', 'tipo_login.id_tipo_login', '=' , 'login.id_tipo_login')
+            .where('tipo_login.nome_tipo_login', 'PROFESSOR')
+            .limit(5)
+            .offset((page - 1) * 5)     
+            
+            
+            const [count] = 
+                await knex('professor')
+                .from('professor')
+                .join('pessoa', 'pessoa.cpf', '=', 'professor.cpf_professor')
+                .where('pessoa.situacao', false)
+                .count();
+
+            res.header('count', count["count"]);
+                console.log(count)
+           return res.json(result)
+        } catch (error) {
+            next(error);
+        }
+    },
+   
+    async SemPaginacaoBuscaProfessor(req, res, next){
+        try {
+       
+            const result = await knex
+            .select('pessoa.cpf','pessoa.nome')
+            .from('pessoa')
+            .where('pessoa.situacao', true)
+            .join(
+                'professor', 'professor.cpf_professor'
+                    ,'=',
+                'pessoa.cpf'
+            )
+            
+
+           return res.json(result)
+        } catch (error) {
+            next(error);
+        }
+    },
+    //BUSCAR ALUNOS DE ACORDO COM A DISCIPLINA E A TURMA 
+    async Faltas(req, res, next){
+        try {
+            const cpfProfessor = req.auth
+            const { idDisciplina, idTurma} = req.params;
+
+            const response = 
+                await knex
+                    .select('faltas_aluno.*', 'pessoa.nome')
+                        .from('faltas_aluno')
+                        .join
+                        (
+                            'aluno', 'aluno.cpf_aluno' 
+                                ,'=',
+                            'faltas_aluno.cpf_aluno'
+                        )
+                        .join
+                        (
+                            'pessoa','pessoa.cpf' ,
+                                '=',
+                            'aluno.cpf_aluno'
+                        )
+                        .andWhere('faltas_aluno.id_disciplina', idDisciplina)
+                        .andWhere('faltas_aluno.cpf_professor', cpfProfessor)
+                        //ID TURMA É UNICO
+                        .andWhere('faltas_aluno.id_turma', idTurma)
+                     
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    },
+    async lancaFaltas (req, res, next){
+        try {
+            const { cpfAluno, quantidade, idTurma, idDisciplina } = req.body;
+            
+            await knex('faltas_aluno').update({
+                quantidade
+            })
+            .andWhere('cpf_aluno', cpfAluno)
+            .andWhere('id_turma', idTurma)
+            .andWhere('id_disciplina', idDisciplina)
+
+            res.status(201).send('ok')
+        } catch (error) {
+            next(error)
+        }
+    }
 }

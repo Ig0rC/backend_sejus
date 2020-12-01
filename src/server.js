@@ -20,7 +20,8 @@ const AuthRoutes = require('./routes/Authroutes/routes');
 const PessoasRoutes = require('./routes/PessoaController/routes');
 const AdministradorRoutes = require('./routes/AdministradorRoutes/routes');
 const AlunosRoutes = require('./routes/AlunosRoutes/routes');
-
+const CursoInstituicoes = require('./routes/ConnectionInstituicaoCursoRoutes/routes');
+const AvaliaRoutes = require('./routes/AvaliaRoutes/routes')
 
 const app = express();
 
@@ -51,7 +52,9 @@ app.use
         AuthRoutes,
         PessoasRoutes,
         AdministradorRoutes,
-        AlunosRoutes
+        AlunosRoutes,
+        CursoInstituicoes,
+        AvaliaRoutes
 );
 
 

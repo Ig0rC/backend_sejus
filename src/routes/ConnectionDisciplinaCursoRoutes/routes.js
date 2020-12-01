@@ -6,7 +6,7 @@ const DisciplinaCursoController = require('../../controllers/ConnectionDisciplin
 
 DisciplinaCursoRoutes.post('/disciplinacurso/:idD/:idC', DisciplinaCursoController.VincularDiscCur);
 DisciplinaCursoRoutes.get('/disciplinacurso', DisciplinaCursoController.BuscarDisciplinaCursos);
-DisciplinaCursoRoutes.get('/disciplinacurso/:idD/:idC', DisciplinaCursoController.SelecionarDisciplinaCurso);
+DisciplinaCursoRoutes.get('/disciplinacurso/:idC', DisciplinaCursoController.SelecionarDisciplinaCurso);
 DisciplinaCursoRoutes.delete('/disciplinacurso/:idD/:idC', DisciplinaCursoController.deletaCurso);
 
 

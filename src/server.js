@@ -27,16 +27,16 @@ const app = express();
 
 const corsOptions = {
     exposedHeaders: 'count',
-   
-  };
+
+};
 
 app.use(cors(corsOptions));
 
 app.use(express.json());
 
 app.use
-(
-        InstituicaoRotues, 
+    (
+        InstituicaoRotues,
         DisciplinaRoutes,
         HorariaRoutes,
         CadastroRoutes,
@@ -55,7 +55,7 @@ app.use
         AlunosRoutes,
         CursoInstituicoes,
         AvaliaRoutes
-);
+    );
 
 
 
@@ -69,7 +69,7 @@ app.use((req, res, next) => {
 //catall
 app.use((error, req, res, next) => {
     res.status(error.status || 500)
-    res.json({error: error.message});
+    res.json({ error: error.message });
 })
 
 

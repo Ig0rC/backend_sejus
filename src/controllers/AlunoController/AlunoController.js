@@ -224,7 +224,7 @@ module.exports = {
                             ,'=',
                         'endereco_instituicao.id_endereco'
                     );
-
+                        [{}]
             return res.json(response)
         } catch (error) {
             next(error)
@@ -235,7 +235,8 @@ module.exports = {
             const { idCurso, idInsti } = req.params;
 
            
-                const info = 
+                
+            const info = 
                 await knex
                     .select
                     (

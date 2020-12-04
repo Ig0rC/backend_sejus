@@ -53,21 +53,31 @@ module.exports = {
      },
      async AtualizarDisciplina(req, res, next){
          try {
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
              const {
                 id
              } = req.params;
              const {
                  nome, 
-                 horario_aula,
-                 data,
                  horas,
             } = req.body;
+
                 await knex('disciplina')
                         .where('id_disciplina', id)
                             .update({
-                                nome: nome,
-                                horario_aula: horario_aula,
-                                data: data,
+                                nome_disciplina: nome,
                                 horas: horas,
                             });
 
@@ -89,6 +99,18 @@ module.exports = {
          try {
              const result = await knex('disciplina')
              
+             res.json(result)
+         } catch (error) {
+             next(error)
+         }
+     },
+     async SelecionarDisciplina (req, res, next){
+         try {
+             const { idDisciplina } = req.params;
+             const result = 
+                await knex('disciplina').where({
+                    id_disciplina: idDisciplina
+             })
              res.json(result)
          } catch (error) {
              next(error)

@@ -1,3 +1,4 @@
+const { del } = require('../../database/index');
 const knex = require('../../database/index');
 
 
@@ -172,30 +173,7 @@ module.exports = {
             next(error)
         }
     },
-    async deleteInstituicao(req, res, next) {
-
-        try {
-            const { id } = req.params;
-           
-            const id_instituicao = id;
-
-            await knex('endereco_instituicao')
-                .where({ id_instituicao })
-                .del();
-
-            await knex('telefone_instituicao')
-                .where({ id_instituicao })
-                .del()
-
-            await knex('instituicao')
-                .where({ id_instituicao })
-                .del();
-
-            return res.status(201).send('foi deletado')
-        } catch (error) {
-            next(error);
-        }
-    },
+ 
     async selecionaInstituicao(req, res, next){
        
         try {
@@ -210,7 +188,11 @@ module.exports = {
                 .join ('telefone',  'telefone.id_telefone', '=','telefone_instituicao.id_telefone')
                 .join('tipo_telefone', 'tipo_telefone.id_tipo_telefone', '=', 'telefone.id_tipo_telefone')
                 .join('endereco', 'endereco.id_endereco', '=', 'endereco_instituicao.id_endereco')
-                .select('instituicao.*', 'endereco.*', 'telefone.*', 'tipo_telefone.nome_tipo_telefone')
+                .select
+                (
+                    'instituicao.*', 'endereco.*', 'telefone.*', 'tipo_telefone.nome_tipo_telefone',
+
+                )
 
                 return res.json(selecionarInst)
         } catch (error) {
@@ -235,15 +217,49 @@ module.exports = {
                 next(error);
             }
  
-            const { id } = req.params;
-            const { nome, responsavel, unidade, email} = req.body;
+            const { idInstituicao, idTelefone, idEndereco } = req.params;
+            const {    
+                nome, 
+                responsavel, 
+                unidade, 
+                email,
+                ddd,
+                numero_telefone,
+                tipo_telefone, 
+                cep, 
+                estado,
+                cidade,
+                bairro,
+                quadra,
+                numero_endereco,
+                complemento
+            } = req.body;
     
             
-    
+
+            await knex('telefone').where({
+                id_telefone: idTelefone
+            }).update({
+                ddd: ddd,
+                numero_telefone: numero_telefone
+            })
+
+            await knex('endereco').where({
+                id_endereco: idEndereco
+            }).update({
+                cep: cep,
+                estado: estado,
+                cidade: cidade,
+                bairro: bairro,
+                quadra: quadra,
+                numero_endereco: numero_endereco,
+                complemento: complemento
+            })
+   
             await knex('instituicao')
-                .where('id_instituicao', id)
+                .where('id_instituicao', idInstituicao)
                 .update({
-                    nome: nome,
+                    nome_instituicao: nome,
                     responsavel: responsavel,
                     unidade: unidade,
                     email: email
@@ -334,5 +350,66 @@ module.exports = {
         } catch (error) {
             next(error)
         }
+    },
+    async DeleteInstituicao (req, res, next) {
+        try {
+            const { idInstituicao, idTelefone, idEndereco } = req.params;
+            console.log(idInstituicao)
+            const authorization  = req.auth;
+            const validation =  
+                    await 
+                    knex
+                    .select('administrador.cpf_administrador')
+                    .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)             
+                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                    .where('pessoa.situacao', true)
+
+            if(validation.length === 0){
+                next(error);
+            }
+
+            const responsePertence = await
+                knex('pertence')
+                    .where({
+                        id_instituicao: idInstituicao
+                    })
+            console.log()
+            if(responsePertence.length > 0){
+                return res.status(404).send('Existe Curso ou Turma pedente')
+            }
+
+
+            await knex('telefone_instituicao').where({
+                id_instituicao: idInstituicao
+            }).del();
+
+            await knex('endereco_instituicao').where({
+                id_instituicao: idInstituicao,
+                id_endereco: idEndereco 
+            }).del();
+
+            await knex('telefone').where({
+                id_telefone: idTelefone
+            }).del();
+
+            await knex('endereco').where({
+                id_endereco: idEndereco
+            }).del();
+
+            await knex('instituicao_curso')
+                .where({
+                    id_instituicao: idInstituicao
+                }).del();
+
+            await knex('instituicao')
+                .where('id_instituicao', idInstituicao)
+                .del();
+
+            return res.status(201).send();
+        } catch (error) {
+            next(error);
+        }
+      
     }
 }

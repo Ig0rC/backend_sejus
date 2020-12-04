@@ -69,5 +69,37 @@ module.exports = {
         } catch (error) {
             next(error)
         }
+    },
+    async MostrarAlunosPorTurma (req, res, next){
+        try {
+            const {idTurma } = req.params;
+
+            const response =
+                await knex  
+                    .select('pessoa.nome', 'pessoa.cpf', 'pessoa.nome_social', 'login.email' )
+                        .from('participa')
+                        .join
+                        (
+                            'aluno', 'aluno.cpf_aluno'
+                                ,'=',
+                            'participa.cpf_aluno'
+                        )
+                        .join
+                        (
+                            'pessoa', 'pessoa.cpf',
+                                '=',
+                            'aluno.cpf_aluno'
+                        )
+                        .join
+                        (
+                            'login', 'login.id_login'
+                                ,'=',
+                            'pessoa.login' 
+                        )
+                        .where('participa.id_turma', idTurma);
+            return res.json(response)
+        } catch (error) {
+            next(error)
+        }
     }
 }

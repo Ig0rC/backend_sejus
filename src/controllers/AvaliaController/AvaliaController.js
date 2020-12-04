@@ -2,26 +2,19 @@ const knex = require('../../database/index');
 
 
 module.exports = {
-    async criarAvaliaAluno(req, res, next){
-    },
-    async buscarNotaDeAcordoTurma (req, res, next){
-        try {
-            
-        } catch (error) {
-            
-        }
-    },
-    async AvaliaAluno (req, res, next){
+    async AvaliaAluno (req, res, next){ // METODO ASYNC 
         try {
             const cpfProfessor = req.auth;
             const { 
                 idDisciplina, 
                 cpf_aluno,
-                idTurma,
+                idTurma,   //PUXANDO MINHAS VARÍAVEIS NUM OBJETO
                 nota, 
                 bimestre
             } = req.body;
 
+
+            //FRAMEWORK KNEX SELECIONANDO A TABELA AVALIA COM UPDATE PARA TROCA OS VALORES E O AND WHERE CONDIÇÕES DO SQL
             await knex('avalia').update({
                 nota: nota,
                 bimestre: bimestre

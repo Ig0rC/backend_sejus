@@ -92,22 +92,22 @@ module.exports = {
                 next(error);
             }
         },
-        async AtualizarCurso(req, res, next){
-            const authorization  = req.auth;
-            const validation =  
-                    await 
-                    knex
-                    .select('administrador.cpf_administrador')
-                    .from('administrador')
-                    .where('administrador.cpf_administrador', authorization)             
-                    .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
-                    .where('pessoa.situacao', true)
-
-            if(validation.length === 0){
-                next(error);
-            }
- 
+        async UpdateIdCUrsos(req, res, next){
             try {
+                const authorization  = req.auth;
+                console.log('cursos')
+                const validation =  
+                        await 
+                        knex
+                        .select('administrador.cpf_administrador')
+                        .from('administrador')
+                        .where('administrador.cpf_administrador', authorization)             
+                        .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
+                        .where('pessoa.situacao', true)
+    
+                if(validation.length === 0){
+                    next(error);
+                }
                 const { id } = req.params;
                 const {
                     nome,
@@ -127,7 +127,7 @@ module.exports = {
                             })
                         res.status(201).send();
             } catch (error) {
-                next(error);
+                res.json('error')
             }
         },
         async buscarCursosDisciplina(req, res, next){

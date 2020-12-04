@@ -56,6 +56,7 @@ module.exports = {
                     knex
                     .select('administrador.cpf_administrador')
                     .from('administrador')
+                    .where('administrador.cpf_administrador', authorization)
                     .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                     .where('pessoa.situacao', true)
                   
@@ -116,12 +117,13 @@ module.exports = {
                 next(error);
             }
             const { id } = req.params;
-            const { nome_turma } = req.body;
+            const { nome_turma, data_ingresso} = req.body;
             const id_turma = id; 
             await knex('turma')
                 .where('id_turma' , '=', id_turma)
                 .update({
-                    nome_turma: nome_turma,
+                    nome_turma: nome_turma, 
+                    data_ingresso: data_ingresso,
                 });
             
             return res.status(201).send();
@@ -141,10 +143,23 @@ module.exports = {
                     .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                     .where('pessoa.situacao', true)
 
+            
+                        
             if(validation.length === 0){
                 next(error);
             }
             const { id } = req.params;
+
+            const validarPertence = 
+                await 
+                    knex('pertence')
+                        .where({
+                            id_turma: id
+                        });
+            console.log(validarPertence)
+            if(validarPertence.length === 0 ){
+                return res.status(401).send('Existem Instituição com essa turma');
+            }
 
             await knex('turma')
                 .where('id_turma', '=', id)
@@ -152,19 +167,25 @@ module.exports = {
 
                 res.status(201).send();
         } catch (error) {
-           res.json("Impossivel Deletar a turma, existem alunos nelas")
+            next(error)
         }
     },
     async listaAlunosTurmas(req, res, next){
         try {
             const { id } = req.params;
+
             const result =  await knex
-                                .select('turma.nome_turma', 'pessoa.nome', 'aluno.cpf_aluno')
-                                .from('turma')
-                                    .leftJoin('participa', 'participa.id_turma', '=', 'turma.id_turma')
-                                    .leftJoin('aluno', 'aluno.cpf_aluno','=',  'participa.cpf_aluno', )
-                                    .leftJoin('pessoa', 'pessoa.cpf','=', 'aluno.cpf_aluno',  )
-                                    .where('turma.id_turma', id);
+                .select(
+                    'turma.nome_turma', 'pessoa.nome', 'aluno.cpf_aluno', 'telefone.*', 'login.email'
+                    )
+                    .from('turma')
+                        .join('participa', 'participa.id_turma', '=', 'turma.id_turma')
+                        .join('aluno', 'aluno.cpf_aluno','=',  'participa.cpf_aluno', )
+                        .join('pessoa', 'pessoa.cpf','=', 'aluno.cpf_aluno',  )
+                        .join('login', 'login.id_login', '=', 'pessoa.login')
+                        .join('telefone_pessoa', 'telefone_pessoa.cpf', '=', 'pessoa.cpf')
+                        .join('telefone', 'telefone.id_telefone', '=', 'telefone_pessoa.id_telefone')
+                        .where('turma.id_turma', id);
                 
             return res.json(result);
 

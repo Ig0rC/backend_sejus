@@ -7,6 +7,7 @@ const ConnectionTurmaAluno = require('../../controllers/ConnectionTurmaAlunoCont
 ConnectionTurmaAlunoRoutes.post('/turmaAluno/:idTurma', AuthMiddlewares, ConnectionTurmaAluno.ConexaoTA);
 ConnectionTurmaAlunoRoutes.delete('/turmaAluno/:id', ConnectionTurmaAluno.ExcluindoAlunoTurmas);
 ConnectionTurmaAlunoRoutes.put('/turmaaluno/:id/:turma', ConnectionTurmaAluno.UpdateTurma);
-
+ConnectionTurmaAlunoRoutes
+    .get('/turmaaluno/alunos/:turma', ConnectionTurmaAluno.MostrarAlunosPorTurma);
 
 module.exports = ConnectionTurmaAlunoRoutes;

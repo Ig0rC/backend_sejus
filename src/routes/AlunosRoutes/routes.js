@@ -25,9 +25,14 @@ AlunosRoutes
 .get('/aluno/minha/nota/cursos', AuthMiddlewares, AlunoController.minhaNotasFaculdade)
 
 
+AlunosRoutes.
+get('/aluno/contato/emergencial/buscar/:cpf', AuthMiddlewares, AlunoController.buscarContatoEmergencial);
 
+AlunosRoutes.
+put('/aluno/perfil/atualizar/dados/:cpf/:id_rg/:idEndereco/:idTelefone/:idLogin', AuthMiddlewares, AlunoController.UpdateAluno);
 
-
+AlunosRoutes.
+put('/aluno/perfil/desativar/:cpf', AuthMiddlewares, AlunoController.DesativarAluno);
 
 AlunosRoutes.get('/alunos/info/disciplinas/:idCurso', AlunoController.infoCursoDisciplina)
 AlunosRoutes.get('/alunos/minha/faltas/cursos', AuthMiddlewares, AlunoController.minhasFaltas)

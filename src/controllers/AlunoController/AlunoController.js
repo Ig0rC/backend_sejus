@@ -39,7 +39,13 @@ module.exports = {
     }, 
     async DesativarAluno(req, res, next){
         try {
-            
+            const { cpf } = req.params;
+
+            await knex('pessoa').update({
+                situacao: false
+            }).where({
+                cpf
+            })
 
             
             res.status(201).send();
@@ -110,15 +116,13 @@ module.exports = {
     async PerfilAluno (req, res, next){
         try {
             const { cpf } = req.params;
-            const { authorization } = req.auth;
-            console.log(authorization)
             const response = await 
                 knex
                     .select
                     (
-                        'pessoa.*', 'login.email', 'telefone.*', 'nome_tipo_telefone',
+                        'pessoa.*', 'login.*', 'telefone.*', 'nome_tipo_telefone',
                         'rg.*','aluno.*', 'acessibilidade.*',
-                        'patologia.*', 'autonomia.*',
+                        'patologia.*', 'autonomia.*', 'endereco.*'
                     )
                     .from('pessoa')
                     .join
@@ -181,6 +185,18 @@ module.exports = {
                         '=',
                         'saude_aluno.id_autonomia'
                     )
+                    .join
+                    (
+                        'endereco_pessoa', 'endereco_pessoa.cpf',
+                         '=',
+                        'pessoa.cpf'
+                    )
+                    .join
+                    (
+                        'endereco', 'endereco.id_endereco'
+                            ,'=',
+                        'endereco_pessoa.id_endereco'
+                    )
                     .where('pessoa.cpf', cpf);
 
 
@@ -189,6 +205,33 @@ module.exports = {
             next(error)
         }
     }, 
+    async buscarContatoEmergencial (req, res, next){
+        try {
+            const { cpf } = req.params;
+
+            const result = await knex
+                .select('contato_emergencial.*', 'telefone.*')
+                .from('contato_emergencial')
+                .join
+                (
+                    'aluno', 'aluno.id_contato_emergencial',
+                    '=',
+                    'contato_emergencial.id_contato_emergencial'
+                )
+                .join
+                (
+                    'telefone', 'telefone.id_telefone'
+                    ,'=',
+                    'contato_emergencial.id_telefone'
+                )
+                .where('aluno.cpf_aluno', cpf)
+
+                res.json(result)
+
+        } catch (error) {
+            next(error)
+        }   
+    },
     async buscarCursos(req, res, next){
         try {
             const response = 
@@ -375,8 +418,6 @@ module.exports = {
     },
     async minhasFaltas (req, res, next){
         try {
-            console.log('entrou')
-
             const cpfAluno = req.auth;
 
             const response = 
@@ -399,6 +440,78 @@ module.exports = {
                     'faltas_aluno.cpf_aluno': cpfAluno
                 })
            return  res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }, 
+    async UpdateAluno(req, res, next){
+        try {
+            
+            console.log('Ok')
+            const { cpf, id_rg, idEndereco, idTelefone, idLogin } = req.params;
+            const { 
+                nome, nome_social , naturalidade, nascimento, sexo, //PESSOA
+                numero_rg, orgao_emissor, uf, //RG
+                cep, estado, cidade, bairro, quadra, numero_endereco, complemento, // ENDERECO
+                tipo_telefone, ddd, numero_telefone, //telefone
+                email
+            } = req.body;
+            
+
+            let id_tipo_telefone;
+            if(tipo_telefone === 'Móvel'){
+                id_tipo_telefone = 2
+            }else if(tipo_telefone === 'Fixo'){
+                id_tipo_telefone = 1
+            } 
+            await knex('pessoa').update({
+                nome,
+                nome_social,
+                naturalidade,
+                nascimento, 
+                sexo,
+            }).where({
+                cpf: cpf,
+            })
+
+            await knex('rg').update({
+                numero_rg,
+                orgao_emissor,
+                uf
+            }).
+            where({
+                id_rg: id_rg
+            })
+
+
+            await knex('endereco').update({
+                cep,
+                estado, 
+                cidade,
+                bairro,
+                quadra,
+                numero_endereco,
+                complemento 
+            }).where({
+                id_endereco: idEndereco
+            })
+
+            await knex('telefone').update({
+                id_tipo_telefone,
+                ddd,
+                numero_telefone
+            }).where({
+                id_telefone: idTelefone
+            })
+            console.log(idLogin)
+            await knex('login').update({
+                email, 
+            }).where({
+                id_login: idLogin
+            })
+
+
+            res.status(201).send('Atualizado')
         } catch (error) {
             next(error)
         }

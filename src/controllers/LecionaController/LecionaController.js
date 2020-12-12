@@ -5,21 +5,25 @@ module.exports = {
     async ConectarProfessorDisciplina(req, res, next){
         try {
             const { disciplina , cpf_professor , id_turma, semestre, ano, horario_aula, diasemana } = req.body;
-      
+            
+
+
+            //VERIFICANDO SE EXISTE LECIONA DESSE PROFESSOR
+            const responseL =
+            await knex('leciona')
+                .andWhere('id_turma', id_turma)
+                .andWhere('id_disciplina', disciplina);
+            if(responseL.length > 0){
+                return res.status(401).send('Já Existe Professor Selecionado há Disciplina')
+            }
             const response =
             await knex('participa')
                 .where({
                     id_turma: id_turma,
                 });
-
+            
+                
             if(response.length > 0){
-                console.log('primeiro IF')
-                const responseL =
-                await knex('leciona')
-                    .andWhere('id_turma', id_turma)
-                    .andWhere('id_disciplina', disciplina);
-        
-                if(responseL[1] === undefined){
                     for(let i = 0; i < response.length; i++){
                         await knex('faltas_aluno').insert({
                             cpf_professor: cpf_professor,
@@ -31,16 +35,9 @@ module.exports = {
                             quantidade: 0
                         });
                     }   
-                }else{
-                    return res.status(401).send('Já Existe Professor Selecionado há Disciplina')
-                }
             }
-            const responseL =
-            await knex('leciona')
-                .andWhere('id_turma', id_turma)
-                .andWhere('id_disciplina', disciplina);
-            
-            if(responseL[1] === undefined){
+           
+           
                 await knex('leciona').insert({
                     id_disciplina: disciplina,
                     cpf_professor: cpf_professor,
@@ -55,12 +52,8 @@ module.exports = {
                     situacao_turma: 'aberto'
                 }).where({ id_turma: id_turma})
 
-               return res.status(201).send();
-            }
-          
-
-        return res.status(201).send('Já Existe Professor Selecionado há Disciplina')
-
+                
+                res.status(201).send('Cadastrado com sucesso')
         } catch (error) {
             next(error)
         }

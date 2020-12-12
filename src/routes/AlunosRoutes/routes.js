@@ -10,6 +10,7 @@ AlunosRoutes.get('/alunos/inativados/:page', AlunoController.AlunoInativados)
 AlunosRoutes.get('/alunos/selecionar/:cpf', AuthMiddlewares, AlunoController.PerfilAluno)
 
 
+AlunosRoutes.get('/alunos/minhas/faltas/cursos/do/curso/mhq', AuthMiddlewares, AlunoController.minhasFaltas)
 
 
 AlunosRoutes
@@ -35,7 +36,6 @@ AlunosRoutes.
 put('/aluno/perfil/desativar/:cpf', AuthMiddlewares, AlunoController.DesativarAluno);
 
 AlunosRoutes.get('/alunos/info/disciplinas/:idCurso', AlunoController.infoCursoDisciplina)
-AlunosRoutes.get('/alunos/minha/faltas/cursos', AuthMiddlewares, AlunoController.minhasFaltas)
 
 // AlunosRoutes.get('/alunos/cadastrar/turma/:idTurma', AuthMiddlewares, AlunoController.InscreverNoCurso);
 

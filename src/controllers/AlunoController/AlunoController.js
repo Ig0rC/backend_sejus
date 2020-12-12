@@ -394,7 +394,7 @@ module.exports = {
 
             const response = 
                 await knex
-                .select('avalia.*', 'disciplina.nome_disciplina', 'leciona.*', )
+                .select('avalia.*', 'disciplina.nome_disciplina', 'curso.*', 'turma.*'  )
                 .from('avalia')
                 .join
                 (
@@ -404,10 +404,22 @@ module.exports = {
                 )
                 .join
                 (
-                    'leciona', 'leciona.id_disciplina'
+                    'turma' , 'turma.id_turma'
                         ,'=',
-                    'avalia.id_disciplina'
-                )           
+                    'avalia.id_turma'
+                )
+                .join
+                (
+                    'pertence' , 'pertence.id_turma'
+                        ,'=',
+                    'turma.id_turma'
+                )
+                .join
+                (
+                    'curso' , 'curso.id_curso'
+                        ,'=',
+                    'pertence.id_curso'
+                )
                 .where({
                     'avalia.cpf_aluno': cpfAluno
                 })
@@ -419,10 +431,10 @@ module.exports = {
     async minhasFaltas (req, res, next){
         try {
             const cpfAluno = req.auth;
-
+            console.log(cpfAluno)
             const response = 
                 await knex
-                .select('faltas_aluno.*', 'disciplina.nome_disciplina', 'leciona.*' )
+                .select('faltas_aluno.*', 'disciplina.nome_disciplina', 'curso.*', 'turma.*' )
                 .from('faltas_aluno')
                 .join
                 (
@@ -432,18 +444,35 @@ module.exports = {
                 )
                 .join
                 (
-                    'leciona', 'leciona.id_disciplina'
+                    'turma', 'turma.id_turma',
+                        '=',
+                    'faltas_aluno.id_turma'
+                )
+                .join
+                (
+                    'pertence', 'pertence.id_turma' 
                         ,'=',
-                    'disciplina.id_disciplina'
-                )             
+                    'turma.id_turma'
+                )
+                .join
+                (
+                    'curso', 'curso.id_curso'
+                        ,'=',
+                    'pertence.id_curso'
+                )
                 .where({
                     'faltas_aluno.cpf_aluno': cpfAluno
                 })
+           
+
+                console.log(response)
            return  res.json(response)
         } catch (error) {
             next(error)
         }
     }, 
+
+   
     async UpdateAluno(req, res, next){
         try {
             

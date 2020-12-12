@@ -144,9 +144,7 @@ module.exports = {
             if(!validation){
                 next(error);
             }
-        
-           
-            const { id_instituicao,  page  } = req.params;
+            const { id_instituicao, page } = req.params
 
             const query = knex('instituicao')
                 .limit(5)
@@ -213,10 +211,11 @@ module.exports = {
                     .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                     .where('pessoa.situacao', true)
 
+
             if(validation.length === 0){
                 next(error);
             }
- 
+
             const { idInstituicao, idTelefone, idEndereco } = req.params;
             const {    
                 nome, 
@@ -224,8 +223,8 @@ module.exports = {
                 unidade, 
                 email,
                 ddd,
+                id_tipo_telefone,
                 numero_telefone,
-                tipo_telefone, 
                 cep, 
                 estado,
                 cidade,
@@ -235,7 +234,6 @@ module.exports = {
                 complemento
             } = req.body;
     
-            
 
             await knex('telefone').where({
                 id_telefone: idTelefone

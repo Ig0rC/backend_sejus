@@ -14,13 +14,12 @@ module.exports = {
                             .join('pessoa', 'pessoa.cpf', '=', 'administrador.cpf_administrador')
                         .where('pessoa.situacao', true)
 
-            console.debug(validation)
             if(validation.length === 0){
                 next(error);
             }
             const { cpf , verify } = req.params;
             
-            console.log(cpf, verify)
+         
             if(verify == 'true'){
                 const situacao = true;
                 await 

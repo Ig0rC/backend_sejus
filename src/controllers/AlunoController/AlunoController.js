@@ -471,8 +471,6 @@ module.exports = {
             next(error)
         }
     }, 
-
-   
     async UpdateAluno(req, res, next){
         try {
             

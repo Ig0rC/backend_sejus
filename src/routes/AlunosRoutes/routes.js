@@ -2,12 +2,13 @@ const express = require('express');
 const AlunosRoutes = express.Router();
 const AuthMiddlewares = require('../../middlewares/AuthMiddlewares');
 
-const AlunoController = require('../../controllers/AlunoController/AlunoController');
+const AlunoController = require('../../controllers/AlunoController/AlunoController.js');
 
 
 AlunosRoutes.get('/alunos/:page', AlunoController.BuscarAlunos)
 AlunosRoutes.get('/alunos/inativados/:page', AlunoController.AlunoInativados)
-AlunosRoutes.get('/alunos/selecionar/:cpf', AuthMiddlewares, AlunoController.PerfilAluno)
+AlunosRoutes.get('/alunos/selecionar/:cpf', AlunoController.PerfilAluno)
+
 
 
 AlunosRoutes.get('/alunos/minhas/faltas/cursos/do/curso/mhq', AuthMiddlewares, AlunoController.minhasFaltas)

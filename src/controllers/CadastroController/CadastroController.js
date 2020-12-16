@@ -65,7 +65,7 @@ module.exports = {
                 await knex('rg').insert({
                     numero_rg, orgao_emissor, uf
                 });
-                // insert tabela email;
+                // insert tabela Login;
                 const senha = bcrypt.hashSync(senhaemail, 2)
                 console.log(senha)
                 await knex('login').insert({
@@ -187,7 +187,6 @@ module.exports = {
                 });
                 // insert tabela email;
                 const senha = bcrypt.hashSync(senhaemail, 2)
-                console.log(senha)
                 await knex('login').insert({
                     email, senha, id_tipo_login
                 });
@@ -206,23 +205,15 @@ module.exports = {
                     }
                 }
 
-
-
                 //  insert table endereco
                 await knex('endereco').insert({
                     cep, estado, cidade, bairro, quadra, numero_endereco, complemento
                 });
 
-
                 // insert tabela telefone
                 await knex('telefone').insert({
                     id_tipo_telefone, ddd, ddi, numero_telefone
                 });
-
-
-
-
-
 
                 // pegando id do login
                 let consult_id_login = await knex.select('id_login', 'email')
@@ -259,7 +250,6 @@ module.exports = {
                             naturalidade, nascimento, sexo,
                             situacao
                         });
-
                     }
                 }
                 //inserir tabela telefone_pessoa
@@ -445,15 +435,24 @@ module.exports = {
                         descricao_perfil, experiencia_profissional,
                         conhecimento_curso, id_contato_emergencial,  rendasalarial
                     });
-                    console.log('vai brasil')
+                }
+
+                for (let i = 0; i < consult_id_login.length; i++) {
+                    if (consult_id_login[i].email === email) {
+                        const consulta_parte2_login = consult_id_login[i].id_login
+                        const login = consulta_parte2_login;
+
+                        await knex('alterar_email_senha').insert({
+                            id_login: login,
+                            cpf_aluno: cpf
+                        })
+                    }
                 }
 
 
                 await knex('saude_aluno').insert({
                     cpf_aluno, id_acessibilidade, id_patologia, id_autonomia
                 });
-
-                console.log('contato')
 
                 return res.status(201).send();
             }

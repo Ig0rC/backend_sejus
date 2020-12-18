@@ -6,8 +6,9 @@ const AlterarSenhaController = require('../../controllers/RecuperarSenhaAluno/Re
 
 
 
-AlterarSenhaRoutes.get('/alterar/senha/login', AlterarSenhaController.alterarLogin);
+AlterarSenhaRoutes.post('/alterar/senha/login', AlterarSenhaController.alterarLogin);
 AlterarSenhaRoutes.post('/validar/senha/bd', AlterarSenhaController.verificarCPFnoBD);
+AlterarSenhaRoutes.get('/search/email/login/:id', AlterarSenhaController.SearchEmail);
 
 
 
@@ -15,3 +16,4 @@ AlterarSenhaRoutes.post('/validar/senha/bd', AlterarSenhaController.verificarCPF
 
 
 module.exports = AlterarSenhaRoutes
+

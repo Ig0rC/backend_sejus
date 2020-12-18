@@ -7,7 +7,7 @@ const AuthMiddlewares = require('../../middlewares/AuthMiddlewares');
 
 
 ProfessorRoutes.get('/professor/:page', ProfessorController.BuscarProfessores);
-ProfessorRoutes.get('/professor/selecionar/:cpf', ProfessorController.SelecionaProfessor);
+ProfessorRoutes.get('/professor/selecionar/:cpf', AuthMiddlewares, ProfessorController.SelecionaProfessor);
 ProfessorRoutes.delete('/professor', ProfessorController.ExcluirProfessor);
 
 ProfessorRoutes.get('/professor/leciona/materia',
@@ -20,7 +20,6 @@ ProfessorRoutes
 ProfessorRoutes
     .get('/professor/turma/selecionada/notas/:idTurma/:idDisciplina', 
     ProfessorController.SelecionaLecionaNotas);
-
 
 ProfessorRoutes
     .get(`/professor/alunos/faltas/:idDisciplina/:idTurma`, AuthMiddlewares ,ProfessorController.Faltas);

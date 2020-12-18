@@ -130,8 +130,8 @@ module.exports = {
     },
     async BuscarInstituicoes(req, res, next) {
         try {
-             const authorization  = req.auth;
-             const validation =  
+            const authorization  = req.auth;
+            const validation =  
                     await 
                     knex
                     .select('administrador.cpf_administrador')

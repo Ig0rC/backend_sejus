@@ -49,7 +49,16 @@ module.exports = {
     async SelecionaProfessor(req, res, netxt) {
 
         try {
+            let cpfSearch = '';
+            // const authCPF =
             const { cpf } = req.params;
+            console.log(typeof cpf)
+            if(cpf === '0' ){
+                cpfSearch = req.auth;
+            }else{
+                cpfSearch = cpf
+            }
+            console.log(cpfSearch)
 
             const result = await knex
                 .select('pessoa.*', 'login.email', 'endereco.*', 'telefone.*', 'rg.*', 'professor.*')
@@ -63,7 +72,7 @@ module.exports = {
                 .join('telefone_pessoa', 'telefone_pessoa.cpf', '=', 'pessoa.cpf')
                 .join('telefone', 'telefone.id_telefone', '=', 'telefone_pessoa.id_telefone')
                 .join('tipo_telefone', 'tipo_telefone.id_tipo_telefone', '=', 'telefone.id_tipo_telefone')
-                .where('pessoa.cpf', cpf)
+                .where('pessoa.cpf', cpfSearch)
 
             return res.json(result);
         } catch (error) {
@@ -277,8 +286,19 @@ module.exports = {
                 graduacao
             } = req.body;
 
+            console.log('vai', cpf)
+            let cpfSearch;
+
+            if(cpf === '0'){
+                cpfSearch = req.auth;
+            }else{
+                cpfSearch = cpf;
+            }
+
+            console.log('gay',cpfSearch)
+
             await knex('pessoa')
-            .where({cpf: cpf})
+            .where({cpf: cpfSearch})
             .update({
                 nome: name,
                 nome_social: nome_social,
@@ -306,7 +326,6 @@ module.exports = {
                     id_rg: idRg
                 })
             //login
-            console.log(idLogin)
             await knex('login').update({
                 email: email
             })
@@ -328,7 +347,7 @@ module.exports = {
                 })
 
             await knex('professor').where({
-                cpf_professor: cpf
+                cpf_professor: cpfSearch
             }).update({
                 especializacao: especializacao,
                 grau_formacao: graduacao
@@ -336,7 +355,7 @@ module.exports = {
 
      
 
-            res.status(201).send('feito')
+            res.status(201).send('Atualizado com Sucesso!')
         } catch (error) {
             next(error)
         }

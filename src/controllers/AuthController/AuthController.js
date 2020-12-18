@@ -20,11 +20,12 @@ module.exports = {
         const result = user[0].senha
   
         const userResult = user[0].id_login;
-        console.log(password)
+
         if(!user){
-           
             return res.status(401).send();
         }
+
+        
         const isValidationPassword = await bcrypt.compare(password, result) 
     
         if(!isValidationPassword){

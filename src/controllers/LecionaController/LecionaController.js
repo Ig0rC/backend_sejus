@@ -34,6 +34,16 @@ module.exports = {
                             ano: ano,
                             quantidade: 0
                         });
+                        await knex('avalia').insert({
+                            cpf_professor: cpf_professor,
+                            cpf_aluno: response[i].cpf_aluno,
+                            id_disciplina: disciplina,
+                            id_turma: id_turma,
+                            semestre: semestre,
+                            ano: ano,
+                            nota: 0,
+                            bimestre: 'Pendente',
+                        });
                     }   
             }
            

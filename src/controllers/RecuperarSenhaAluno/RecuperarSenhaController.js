@@ -17,10 +17,7 @@ module.exports = {
                 return res.send('CPF não encotrado, por favor, cadastre-se')
             }
     
-            // const searchEmail = await knex('login').where({
-            //     id_login: result[0].id_login
-            // })
-            // const email = searchEmail[0].email
+          
 
             return res.json(true)
 
@@ -29,22 +26,41 @@ module.exports = {
         }
      
     },
+    async SearchEmail (req, res, next) {
+        try {
+
+            const { id } = req.params;
+
+            
+            const result = await knex('alterar_email_senha').where({
+                cpf_aluno : id
+            });
+
+
+
+            const searchEmail = await knex('login').where({
+                 id_login: result[0].id_login
+            });
+
+            const email = searchEmail[0].email
+            const login = searchEmail[0].id_login;
+            console.log(login)
+
+            res.json({
+                email,
+                login
+            });
+
+        } catch (error) {
+            next(error)
+        }
+    },
 
     async alterarLogin( req, res, next) {
         try {
-            const { cpf, email, senhaNova } = req.body;
+            const { email, senhaNova, login } = req.body;
 
-            // Validando CPF
-            const result = await knex('alterar_email_senha').where({
-                cpf_aluno : cpf
-            })
 
-            console.log(result.length)
-            //Caso não tenha CPF 
-            if(result.length === 0 ){
-                return res.send('CPF não encotrado, por favor, cadastre-se;')
-            }
-            
             //caso tenha
             const senha = bcrypt.hashSync(senhaNova, 2)
 
@@ -54,7 +70,7 @@ module.exports = {
                     senha: senha
                 })
                 .where({
-                    id_login: result[0].id_login
+                    id_login: login
                 })
             }
             

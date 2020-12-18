@@ -39,6 +39,31 @@ module.exports = {
             //verificação de tipo de login 
 
 
+            const validation_email = 
+                await knex('login').where({
+                    email: email,
+                })
+
+            const validation_cpf = 
+                await knex('pessoa').where({
+                    cpf: cpf,
+                })
+            
+            console.log(validation_cpf.length > 0)
+            
+            //VALIDANDO E_MAIl
+            if(validation_email.length > 0){
+                const alert = 'E-mail já cadastrado!'
+                return res.status(201).send(alert)
+            }
+            // Validando CPF
+            if( validation_cpf.length > 0){
+                const alert = 'CPF Já Cadastrado!'
+                return res.status(201).send(alert)
+            }
+
+          
+
 
             const validation_login = await knex
                 .select('id_tipo_login', 'nome_tipo_login')
@@ -178,7 +203,7 @@ module.exports = {
                 await knex('professor').insert({
                     cpf_professor, especializacao, grau_formacao
                 })
-                return res.status(201).send();
+                return res.status(201).send('Cadastrado com Sucesso!');
             }
             //aluno
             else if (result_validation_login_nome == 'ALUNO') {
@@ -454,7 +479,7 @@ module.exports = {
                     cpf_aluno, id_acessibilidade, id_patologia, id_autonomia
                 });
 
-                return res.status(201).send();
+                return res.status(201).send('Cadastrado com Sucesso!');
             }
             else if (result_validation_login_nome == 'ADM') {
                 await knex('rg').insert({

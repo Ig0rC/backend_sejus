@@ -80,6 +80,7 @@ module.exports = {
         }
 
     },
+    
     //METODO DE BUSCAR TURMAS PARA LANÇAR NOTAS OU FALTAS
     async BuscarLeciona(req, res, next) {
         try {

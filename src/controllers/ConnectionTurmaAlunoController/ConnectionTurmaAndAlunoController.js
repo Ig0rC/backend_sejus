@@ -7,7 +7,15 @@ module.exports = {
             const {
                 idTurma
             } = req.params;
+
+            const validation = 
+                await knex('participa').where({
+                    cpf_aluno: cpf_aluno
+                });
             
+            if(validation.length > 0){
+                return res.status(201).send('Você já esta cadastrado em um curso!')
+            }
             await knex('participa').insert({
                 cpf_aluno, 
                 id_turma: idTurma
@@ -38,7 +46,7 @@ module.exports = {
                     id_turma: idTurma
                 })
             }  
-        return res.status(201).send();
+        return res.status(201).send('Cadastrado com Sucesso');
         } catch (error) {
             next(error)   
         }
@@ -72,7 +80,7 @@ module.exports = {
     },
     async MostrarAlunosPorTurma (req, res, next){
         try {
-            const {idTurma } = req.params;
+            const { idTurma } = req.params;
 
             const response =
                 await knex  

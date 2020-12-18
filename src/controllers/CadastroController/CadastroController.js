@@ -595,7 +595,7 @@ module.exports = {
                 });
 
             
-                return res.status(201).send();
+                return res.status(201).send('Cadastrado com Sucesso!');
 
             }
 
